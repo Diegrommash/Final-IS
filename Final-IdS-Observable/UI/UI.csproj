@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Final-IdS\UI\frmLoguin.cs" Link="frmLoguin.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\UI\frmLoguin.cs" Link="frmLoguin.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Final-IdS\Servicios\Servicios.csproj" />
+    <ProjectReference Include="..\..\Final-IdS-Decorator\Servicios\Servicios.csproj" />
     <ProjectReference Include="..\BE\BE.csproj" />
     <ProjectReference Include="..\BLL\BLL.csproj" />
   </ItemGroup>
