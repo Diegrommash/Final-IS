@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Final-IdS\BE\Excepciones\AccesoADatosExcepcion.cs" Link="Excepciones\AccesoADatosExcepcion.cs" />
+    <Compile Include="..\..\Final-IdS\BE\Excepciones\RepositorioExcepcion.cs" Link="Excepciones\RepositorioExcepcion.cs" />
+    <Compile Include="..\..\Final-IdS\BE\Excepciones\ServicioExcepcion.cs" Link="Excepciones\ServicioExcepcion.cs" />
+    <Compile Include="..\..\Final-IdS\BE\Jugador.cs" Link="Jugador.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Final-IdS\Servicios\Servicios.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Excepciones\" />
+  </ItemGroup>
+
+</Project>
