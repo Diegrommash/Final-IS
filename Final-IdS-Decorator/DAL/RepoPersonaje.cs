@@ -47,6 +47,29 @@ namespace DAL
             } 
         }
 
+        public async Task<int> GuardarPersonajeDeJugador(Personaje personaje, Jugador jugador)
+        {
+            try
+            {
+                if (personaje == null) throw new ArgumentNullException(nameof(personaje));
+                if (jugador == null) throw new ArgumentNullException(nameof(jugador));
+
+                var sql = "SP_GUARDAR_PERSONAJE_DE_JUGADOR";
+                var parametros = new List<IDbDataParameter>
+                {
+                    _acceso.CrearParametro("@JugadorId", jugador.Id, DbType.Int64),
+                    _acceso.CrearParametro("@PersonajeId", personaje.Id, DbType.Int64),
+                };
+
+                var resultado = await _acceso.EscribirAsync(sql, parametros);
+                return resultado;
+            }
+            catch (SqlException ex)
+            {
+                throw new AccesoADatosExcepcion("Error al guarda el personaje del jugador", ex);
+            }
+        }
+
         public async Task<Personaje> BuscarPersonaje(int personajeId)
         {
             try

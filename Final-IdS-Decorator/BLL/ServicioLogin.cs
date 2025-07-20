@@ -1,5 +1,6 @@
 ﻿using BE;
 using DAL;
+using Servicios;
 
 namespace BLL
 {
@@ -22,7 +23,20 @@ namespace BLL
                     Mensaje = "Nombre y contraseña son obligatorios."
                 };
             }
-            return await _repoUsuario.Loguin(jugador);
+            var resultado = await _repoUsuario.Loguin(jugador);
+            if (resultado.Jugador != null)
+            {
+                SesionJugador.IniciarSesion(resultado.Jugador);
+                return resultado;
+            }
+            else
+            {
+                return new Loguin
+                {
+                    Jugador = null,
+                    Mensaje = "Usuario o contraseña incorrectos."
+                };
+            } 
         }
     }
 }

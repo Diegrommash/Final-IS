@@ -10,6 +10,7 @@ using BLL;
 using BLL.Abstracciones;
 using BLL.Decoradores;
 using BLL.Mapper;
+using Servicios;
 using UI;
 
 public class frmCrearPersonaje : Form
@@ -280,7 +281,7 @@ public class frmCrearPersonaje : Form
             return;
         }
 
-        await _servicioPersonaje.GuardarPersonajeAsync(personajeActual);
+        await _servicioPersonaje.GuardarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
         MessageBox.Show("Personaje creado con éxito:\n" + personajeActual.ObtenerDescripcion(), "Éxito");
         this.Close();
     }

@@ -19,15 +19,17 @@ namespace BLL
             _repoItem = new RepoItem(_acceso);
         }
 
-        public async Task<bool> GuardarPersonajeAsync(IComponente personajeDecorado)
+        public async Task<bool> GuardarPersonajeAsync(IComponente personajeDecorado, Jugador jugador)
         {
             try
             {
-                var personajeBaje = ObtenerPersonajeBase(personajeDecorado);
+                var personajeBase = ObtenerPersonajeBase(personajeDecorado);
                 var items = ExtraerDecoradores(personajeDecorado);
 
                 await _acceso.ComenzarTransaccionAsync();
-                var idPersonaje = await _repoPersonaje.GuardarPersonaje(personajeBaje.AEntidad());
+                var idPersonaje = await _repoPersonaje.GuardarPersonaje(personajeBase.AEntidad());
+
+                await _repoPersonaje.GuardarPersonajeDeJugador(personajeBase.AEntidad(), jugador);
 
                 foreach (var (item, orden) in items)
                 {

@@ -128,7 +128,7 @@ BEGIN TRY
     CREATE TABLE PersonajeItem (
     PersonajeId INT NOT NULL,
     ItemId INT NOT NULL,
-    OrdenAplicacion INT NOT NULL,
+    Orden INT NOT NULL,
     PRIMARY KEY (PersonajeId, ItemId),
     FOREIGN KEY (PersonajeId) REFERENCES Personaje(Id),
     FOREIGN KEY (ItemId) REFERENCES Item(Id)
@@ -247,3 +247,23 @@ BEGIN
     FROM Personaje
     WHERE Id = @Id;
 END;
+GO
+
+--Guardar personaje de jugador
+CREATE PROCEDURE SP_GUARDAR_PERSONAJE_DE_JUGADOR
+    @JugadorId INT,
+    @PersonajeId INT
+AS
+BEGIN
+
+    BEGIN TRY
+
+        INSERT INTO JugadorPersonaje (JugadorId, PersonajeId)
+        VALUES (@JugadorId, @PersonajeId);
+
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
