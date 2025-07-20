@@ -14,9 +14,11 @@ public class frmLogin : Form
     private Label lblError;
 
     private readonly ServicioLogin _servicioLogin;
+    private readonly Func<Form> _crearFormularioPrincipal;
 
-    public frmLogin(ServicioLogin servicioLogin)
+    public frmLogin(Func<Form> crearFormularioPrincipal, ServicioLogin servicioLogin)
     {
+        _crearFormularioPrincipal = crearFormularioPrincipal;
         _servicioLogin = servicioLogin;
         InicializarComponentesCustom();
     }
@@ -24,7 +26,7 @@ public class frmLogin : Form
     private void InicializarComponentesCustom()
     {
         this.Text = "Login de Jugador";
-        this.Size = new Size(450, 320); // Más alto
+        this.Size = new Size(450, 320);
         this.StartPosition = FormStartPosition.CenterScreen;
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
@@ -85,7 +87,6 @@ public class frmLogin : Form
         Controls.Add(lblError);
     }
 
-
     private async void btnLogin_Click(object? sender, EventArgs e)
     {
         string nombre = txtNombre.Text.Trim();
@@ -102,7 +103,8 @@ public class frmLogin : Form
         if (loguin.Jugador != null)
         {
             MessageBox.Show($"¡Bienvenido, {loguin.Jugador.Nombre}!", "Login correcto");
-            var frmMain = new frmMain();
+
+            Form frmMain = _crearFormularioPrincipal.Invoke();
             frmMain.Show();
             this.Hide();
         }
@@ -112,9 +114,9 @@ public class frmLogin : Form
         }
     }
 
-    // Método de arranque externo
-    public static void Mostrar(ServicioLogin servicioLogin)
+    // Método de arranque centralizado con formulario dinámico
+    public static void Mostrar(Func<Form> crearFormularioPrincipal, ServicioLogin servicioLogin)
     {
-        Application.Run(new frmLogin(servicioLogin));
+        Application.Run(new frmLogin(crearFormularioPrincipal, servicioLogin));
     }
 }

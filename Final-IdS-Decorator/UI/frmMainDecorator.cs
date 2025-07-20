@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-public class frmMain : Form
+public class frmMainDecorator : Form
 {
     private MenuStrip menuStrip;
 
-    public frmMain()
+    public frmMainDecorator()
     {
         InicializarComponentesCustom();
     }
@@ -61,6 +61,6 @@ public class frmMain : Form
 
     public static void Mostrar()
     {
-        Application.Run(new frmMain());
+        Application.Run(new frmMainDecorator());
     }
 }

@@ -15,7 +15,7 @@ namespace UI
             ApplicationConfiguration.Initialize();
 
             var servicioLogin = new ServicioLogin();
-            Application.Run(new frmLogin(servicioLogin));
+            frmLogin.Mostrar(() => new frmMainDecorator(), servicioLogin);
         }
     }
 }

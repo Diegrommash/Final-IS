@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Final-IdS-Decorator\Servicios\Servicios.csproj" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\ServicioLogin.cs" Link="ServicioLogin.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
+    <ProjectReference Include="..\Servicios\Servicios.csproj" />
   </ItemGroup>
 
 </Project>
