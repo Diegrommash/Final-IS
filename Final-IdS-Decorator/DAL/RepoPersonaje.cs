@@ -26,47 +26,37 @@ namespace DAL
                 if (personaje == null) throw new ArgumentNullException(nameof(personaje));
 
                 var sql = "SP_GUARDAR_PERSONAJE";
-                var parametros = new List<IDbDataParameter>
-                {
-                    _acceso.CrearParametro("@Nombre", personaje.Nombre, DbType.String),
-                };
 
-                var paramId = new SqlParameter("@NuevoId", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                parametros.Add(paramId);
+                var paramNombre = _acceso.CrearParametro("@Nombre", personaje.Nombre, DbType.String);
+                var paramId = _acceso.CrearParametro("@NuevoId", 0, DbType.Int32, ParameterDirection.Output);
+
+                var parametros = new List<IDbDataParameter> { paramNombre, paramId };
 
                 await _acceso.EscribirAsync(sql, parametros);
-                int idGenerado = (int)paramId.Value;
-                return idGenerado;
+
+                return Convert.ToInt32(paramId.Value);
             }
             catch (SqlException ex)
             {
-                throw new AccesoADatosExcepcion("Error al guarda el personaje", ex);
-            } 
+                throw new AccesoADatosExcepcion("Error al guardar el personaje", ex);
+            }
         }
 
         public async Task<int> GuardarPersonajeDeJugador(Personaje personaje, Jugador jugador)
         {
             try
             {
-                if (personaje == null) throw new ArgumentNullException(nameof(personaje));
-                if (jugador == null) throw new ArgumentNullException(nameof(jugador));
-
-                var sql = "SP_GUARDAR_PERSONAJE_DE_JUGADOR";
                 var parametros = new List<IDbDataParameter>
                 {
-                    _acceso.CrearParametro("@JugadorId", jugador.Id, DbType.Int64),
-                    _acceso.CrearParametro("@PersonajeId", personaje.Id, DbType.Int64),
-                };
+                    _acceso.CrearParametro("@JugadorId", jugador.Id, DbType.Int32),
+                    _acceso.CrearParametro("@PersonajeId", personaje.Id, DbType.Int32),
+                 };
 
-                var resultado = await _acceso.EscribirAsync(sql, parametros);
-                return resultado;
+                return await _acceso.EscribirAsync("SP_GUARDAR_PERSONAJE_DE_JUGADOR", parametros);
             }
             catch (SqlException ex)
             {
-                throw new AccesoADatosExcepcion("Error al guarda el personaje del jugador", ex);
+                throw new AccesoADatosExcepcion("Error al guardar el personaje del jugador", ex);
             }
         }
 
@@ -89,6 +79,39 @@ namespace DAL
                 var fila = tabla.Rows[0];
                 var personaje = MapearPersonaje(fila);
                 return personaje;
+            }
+            catch (AccesoADatosExcepcion ex)
+            {
+                throw new RepositorioExcepcion("Error al buscar personaje", ex);
+            }
+        }
+
+        public async Task<List<Personaje>> BuscarPersonajesDeJugador(int personajeId)
+        {
+            try
+            {
+                var sql = "SP_BUSCAR_PERSONAJES_DE_JUGADOR";
+                var parametros = new List<IDbDataParameter>
+                {
+                    _acceso.CrearParametro("@JugadorId", personajeId, DbType.Int64),
+                };
+
+                var tabla = await _acceso.LeerAsync(sql, parametros, CommandType.StoredProcedure);
+                if (tabla == null || tabla.Rows.Count == 0)
+                {
+                    return new List<Personaje>();
+                }
+
+                var personajes = new List<Personaje>();
+                foreach (DataRow fila in tabla.Rows)
+                {
+                    var idPersonaje = Convert.ToInt32(fila["PersonajeId"]);
+                    var p = await BuscarPersonaje(idPersonaje);
+                    personajes.Add(p);
+                }
+
+
+                return personajes;
             }
             catch (AccesoADatosExcepcion ex)
             {

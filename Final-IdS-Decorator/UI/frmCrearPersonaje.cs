@@ -177,6 +177,8 @@ public class frmCrearPersonaje : Form
 
     private async Task CargarOpciones()
     {
+        var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
+
         var items = await _servicioItem.BuscarTodos();
 
         cmbTrabajo.DataSource = items.Where(i => i.Tipo == TipoDecoradorEnum.Trabajo).ToList();

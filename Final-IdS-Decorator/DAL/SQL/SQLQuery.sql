@@ -267,3 +267,21 @@ BEGIN
     END CATCH
 END;
 GO
+
+-- Buscar personajes de un jugador
+CREATE PROCEDURE SP_BUSCAR_PERSONAJES_DE_JUGADOR
+    @JugadorId INT
+AS
+BEGIN
+
+    BEGIN TRY
+
+        SELECT PersonajeId
+        FROM JugadorPersonaje
+
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO

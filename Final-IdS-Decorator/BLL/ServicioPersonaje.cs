@@ -27,13 +27,14 @@ namespace BLL
                 var items = ExtraerDecoradores(personajeDecorado);
 
                 await _acceso.ComenzarTransaccionAsync();
-                var idPersonaje = await _repoPersonaje.GuardarPersonaje(personajeBase.AEntidad());
+
+                personajeBase.Id = await _repoPersonaje.GuardarPersonaje(personajeBase.AEntidad());
 
                 await _repoPersonaje.GuardarPersonajeDeJugador(personajeBase.AEntidad(), jugador);
 
                 foreach (var (item, orden) in items)
                 {
-                    await _repoItem.Guardar(idPersonaje, item.Id, orden);
+                    await _repoItem.Guardar(personajeBase.Id, item.Id, orden);
                 }
                 await _acceso.ConfirmarTransaccionAsync();
                 return true;
@@ -45,16 +46,42 @@ namespace BLL
             }
         }
 
-        public async Task<IComponente> RearmarPersonaje(Personaje personaje)
+        public async Task<List<IComponente>> BuscarPersonajes(Jugador jugador)
         {
             try
             {
-                var persona = await _repoPersonaje.BuscarPersonaje(personaje.Id);
-                var items = await _repoItem.BuscarItemsDePersonajeOrdenados(personaje.Id);
+                List<IComponente> personajesDecorados = new List<IComponente>();
 
-                IComponente personajeActual = new PersonajeBase(persona.Nombre);
+                var personajes = await _repoPersonaje.BuscarPersonajesDeJugador(jugador.Id);
+                if (personajes == null || personajes.Count == 0)
+                {
+                    return new List<IComponente>();
+                }
 
-                foreach (var item in items)
+                foreach (var personaje in personajes)
+                {
+                    var items = await _repoItem.BuscarItemsDePersonajeOrdenados(personaje.Id);
+                    personaje.Items = items;
+
+                    personajesDecorados.Add(RearmarPersonaje(personaje));
+                }
+
+                return personajesDecorados;
+            }
+            catch (RepositorioExcepcion ex)
+            {
+                throw new ServicioExcepcion("Error al buscar los items", ex);
+            }
+
+        }
+
+        private  IComponente RearmarPersonaje(Personaje personaje)
+        {
+            try
+            {
+                IComponente personajeActual = new PersonajeBase(personaje.Nombre);
+
+                foreach (var item in personaje.Items)
                 {
                     personajeActual = item.AplicarItem(personajeActual);
                 }

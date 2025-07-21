@@ -15,6 +15,7 @@ namespace BLL.Mapper
         {
             return new Personaje
             {
+                Id = personaje.Id,
                 Nombre = personaje.Nombre
             };
         }
