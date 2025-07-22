@@ -9,13 +9,12 @@ namespace BLL.Decoradores
         protected IComponente _personajeDecorado;
 
  
-        protected string _nombre;
+
         protected TipoDecoradorEnum _tipo;
         protected int _poder;
         protected int _defensa;
         protected StatEnum _atributoPpal;
 
-        public string Nombre => _nombre;
         public TipoDecoradorEnum Tipo => _tipo;
         public int Poder => _poder;
         public int Defensa => _defensa;
@@ -24,11 +23,12 @@ namespace BLL.Decoradores
 
         public int Id { get; set; }
 
+        public string Nombre { get; set; }
         public Decorador(IComponente personaje, Item item)
         {
             Id = item.Id;
             _personajeDecorado = personaje ?? throw new ArgumentNullException(nameof(personaje));
-            _nombre = item.Nombre;
+            Nombre = item.Nombre;
             _tipo = item.Tipo;
             _poder = item.Poder;
             _defensa = item.Defensa;

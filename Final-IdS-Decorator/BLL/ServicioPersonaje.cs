@@ -137,7 +137,7 @@ namespace BLL
         }
 
 
-        private static List<(Item Item, int Orden)> ExtraerDecoradores(IComponente personajeDecorado)
+        public static List<(Item Item, int Orden)> ExtraerDecoradores(IComponente personajeDecorado)
         {
             var resultado = new List<(Item, int)>();
             int orden = 1;
@@ -163,7 +163,7 @@ namespace BLL
             return resultado;
         }
 
-        private PersonajeBase ObtenerPersonajeBase(IComponente componente)
+        public static PersonajeBase ObtenerPersonajeBase(IComponente componente)
         {
             while (componente is Decorador decorador)
             {

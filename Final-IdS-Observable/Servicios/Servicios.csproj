@@ -8,11 +8,16 @@
 
   <ItemGroup>
     <Compile Include="..\..\Final-IdS-Decorator\Servicios\Configuracion.cs" Link="Configuracion.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\Servicios\SesionJugador.cs" Link="SesionJugador.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BE\BE.csproj" />
   </ItemGroup>
 
 </Project>

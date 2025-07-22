@@ -1,12 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BE;
+using BLL;
+using BLL.Abstracciones;
+using Servicios;
+using UI.Controles;
 
 namespace UI
 {
-    public class frmMainObservable : Form
+    public partial class frmMainObservable : Form
     {
+        private readonly ServicioPersonaje _servicioPersonaje;
+
+        public frmMainObservable()
+        {
+            InitializeComponent();
+            _servicioPersonaje = new ServicioPersonaje();
+        }
+
+        private async void frmMostrarPersonajes_Load(object sender, EventArgs e)
+        {
+            await CargarPersonajesAsync();
+        }
+
+        private async Task CargarPersonajesAsync()
+        {
+            flpCards.Controls.Clear();
+
+            var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
+            foreach (var personaje in personajes)
+            {
+                var card = new ucCardPersonaje();
+                card.CargarPersonaje(personaje);
+                card.OnModificarPersonaje += Card_OnModificarPersonaje;
+                flpCards.Controls.Add(card);
+            }
+        }
+
+        private async void Card_OnModificarPersonaje(object? sender, IComponente personaje)
+        {
+            using var frm = new frmEditarPersonaje(personaje);
+            var resultado = frm.ShowDialog();
+
+            if (resultado == DialogResult.OK)
+            {
+                await CargarPersonajesAsync();
+            }
+        }
     }
 }

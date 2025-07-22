@@ -10,6 +10,7 @@ namespace BLL.Abstracciones
     {
 
         public int Id { get; set; }
+        public string Nombre { get; set; }
         string ObtenerDescripcion();
         int ObtenerPoder();
         int ObtenerDefensa();
