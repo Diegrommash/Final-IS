@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using UI;
 
 public class frmMainDecorator : Form
 {
@@ -19,15 +20,15 @@ public class frmMainDecorator : Form
         menuStrip = new MenuStrip();
         var menuJuego = new ToolStripMenuItem("Juego");
         var itemCrearPersonaje = new ToolStripMenuItem("Crear Personaje");
-        var itemIniciarHistoria = new ToolStripMenuItem("Iniciar Historia");
+        var verPersonajes = new ToolStripMenuItem("Ver Personajes");
         var itemSalir = new ToolStripMenuItem("Salir");
 
         itemCrearPersonaje.Click += (s, e) => AbrirFormularioPersonaje();
-        itemIniciarHistoria.Click += (s, e) => AbrirFormularioHistoria();
+        verPersonajes.Click += (s, e) => AbrirFormularioVerPersonajes();
         itemSalir.Click += (s, e) => this.Close();
 
         menuJuego.DropDownItems.Add(itemCrearPersonaje);
-        menuJuego.DropDownItems.Add(itemIniciarHistoria);
+        menuJuego.DropDownItems.Add(verPersonajes);
         menuJuego.DropDownItems.Add(new ToolStripSeparator());
         menuJuego.DropDownItems.Add(itemSalir);
 
@@ -52,11 +53,11 @@ public class frmMainDecorator : Form
         crearPersonajeForm.Show();
     }
 
-    private void AbrirFormularioHistoria()
+    private void AbrirFormularioVerPersonajes()
     {
-        //var historiaForm = new frmHistoria(); // o frmMision
-        //historiaForm.MdiParent = this;
-        //historiaForm.Show();
+        var verForm = new frmVerPersonajes();
+        verForm.MdiParent = this;
+        verForm.Show();
     }
 
     public static void Mostrar()

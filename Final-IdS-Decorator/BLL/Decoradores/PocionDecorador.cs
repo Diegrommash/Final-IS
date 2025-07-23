@@ -22,7 +22,7 @@ namespace BLL.Decoradores
             string textobonus = bonus ? " (bonus x2!)" : "";
 
             return _personajeDecorado.ObtenerDescripcion()
-                + $"\n🧪(pocion): {Nombre} (+{(bonus ? _poder * 2 : _poder)} poder, +{(bonus ? _defensa * 2 : _defensa)} defensa){textobonus}";
+                + $"\n🧪(pocion): {Nombre} (+{(bonus ? Poder * 2 : Poder)}  poder, + {(bonus ? Defensa * 2 : Defensa)} defensa){textobonus}";
 
         }
     }

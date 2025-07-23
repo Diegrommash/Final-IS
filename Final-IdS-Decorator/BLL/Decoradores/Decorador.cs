@@ -8,31 +8,24 @@ namespace BLL.Decoradores
     {
         protected IComponente _personajeDecorado;
 
- 
-
-        protected TipoDecoradorEnum _tipo;
-        protected int _poder;
-        protected int _defensa;
-        protected StatEnum _atributoPpal;
-
-        public TipoDecoradorEnum Tipo => _tipo;
-        public int Poder => _poder;
-        public int Defensa => _defensa;
-
         public int Orden { get; set; }
-
         public int Id { get; set; }
-
         public string Nombre { get; set; }
+        public TipoDecoradorEnum Tipo { get; set; }
+        public int Poder { get; set; }
+        public int Defensa { get; set; }
+        public StatEnum AtributoPpal { get; set; }
+
         public Decorador(IComponente personaje, Item item)
         {
-            Id = item.Id;
             _personajeDecorado = personaje ?? throw new ArgumentNullException(nameof(personaje));
+
+            Id = item.Id;
             Nombre = item.Nombre;
-            _tipo = item.Tipo;
-            _poder = item.Poder;
-            _defensa = item.Defensa;
-            _atributoPpal = item.AtributoPpl;
+            Tipo = item.Tipo;
+            Poder = item.Poder;
+            Defensa = item.Defensa;
+            AtributoPpal = item.AtributoPpl;
         }
 
         public virtual string ObtenerDescripcion()
@@ -44,13 +37,13 @@ namespace BLL.Decoradores
 
         public virtual int ObtenerPoder()
         {
-            int bonus = TieneTrabajoCompatible() ? _poder * 2 : _poder;
+            int bonus = TieneTrabajoCompatible() ? Poder * 2 : Poder;
             return _personajeDecorado.ObtenerPoder() + bonus;
         }
 
         public virtual int ObtenerDefensa()
         {
-            int bonus = TieneTrabajoCompatible() ? _defensa * 2 : _defensa;
+            int bonus = TieneTrabajoCompatible() ? Defensa * 2 : Defensa;
             return _personajeDecorado.ObtenerDefensa() + bonus;
         }
 
@@ -61,7 +54,7 @@ namespace BLL.Decoradores
             while (actual is Decorador decorador)
             {
                 if (decorador.Tipo == TipoDecoradorEnum.Trabajo &&
-                    decorador._atributoPpal == this._atributoPpal)
+                    decorador.AtributoPpal == this.AtributoPpal)
                 {
                     return true;
                 }
@@ -72,10 +65,6 @@ namespace BLL.Decoradores
             return false;
         }
 
-        /// <summary>
-        /// a futuro, no lo pense bien todavia
-        /// </summary>
-        /// <returns></returns>
         public IComponente ObtenerPersonajeInterno() => _personajeDecorado;
 
         public void ReemplazarPersonajeInterno(IComponente nuevo)
