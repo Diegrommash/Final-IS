@@ -16,6 +16,8 @@ namespace BLL.Decoradores
         public int Defensa { get; set; }
         public StatEnum AtributoPpal { get; set; }
 
+        private Item _item;
+
         public Decorador(IComponente personaje, Item item)
         {
             _personajeDecorado = personaje ?? throw new ArgumentNullException(nameof(personaje));
@@ -26,6 +28,7 @@ namespace BLL.Decoradores
             Poder = item.Poder;
             Defensa = item.Defensa;
             AtributoPpal = item.AtributoPpl;
+            _item = item ?? throw new ArgumentNullException(nameof(item));
         }
 
         public virtual string ObtenerDescripcion()
@@ -72,5 +75,24 @@ namespace BLL.Decoradores
             _personajeDecorado = nuevo;
         }
 
+        public virtual IComponente Clonar()
+        {
+            var clonInterno = (_personajeDecorado as IClonable<IComponente>)?.Clonar();
+
+            if (clonInterno == null)
+                throw new InvalidOperationException("No se pudo clonar el personaje interno.");
+
+            var clonDecorador = (Decorador)Activator.CreateInstance(this.GetType(), clonInterno, _item)!;
+
+            clonDecorador.Id = this.Id;
+            clonDecorador.Nombre = this.Nombre;
+            clonDecorador.Tipo = this.Tipo;
+            clonDecorador.Poder = this.Poder;
+            clonDecorador.Defensa = this.Defensa;
+            clonDecorador.AtributoPpal = this.AtributoPpal;
+            clonDecorador.Orden = this.Orden;
+
+            return clonDecorador;
+        }
     }
 }

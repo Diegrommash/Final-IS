@@ -37,13 +37,11 @@ namespace UI
 
         private async void Card_OnModificarPersonaje(object? sender, IComponente personaje)
         {
-            //using var frm = new frmEditarPersonaje(personaje);
-           // var resultado = frm.ShowDialog();
+            using var frm = new frmCrearPersonaje(personaje);
+            var resultado = frm.ShowDialog();
 
-            //if (resultado == DialogResult.OK)
-            //{
-            //    await CargarPersonajesAsync();
-            //}
+            if (resultado == DialogResult.OK)
+                await CargarPersonajesAsync();
         }
     }
 }

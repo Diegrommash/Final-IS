@@ -29,5 +29,16 @@ namespace BLL.Decoradores
         public virtual int ObtenerPoder() => 0;
         public virtual int ObtenerDefensa() => 0;
 
+        public IComponente Clonar()
+        {
+            return new PersonajeBase(Nombre)
+            {
+                Id = this.Id,
+                Tipo = this.Tipo,
+                Poder = this.Poder,
+                Defensa = this.Defensa,
+                AtributoPpal = this.AtributoPpal
+            };
+        }
     }
 }

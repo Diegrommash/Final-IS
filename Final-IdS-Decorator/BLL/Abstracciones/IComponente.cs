@@ -7,9 +7,8 @@ using BE.Enums;
 
 namespace BLL.Abstracciones
 {
-    public interface IComponente
+    public interface IComponente : IClonable<IComponente>
     {
-
         public int Id { get; set; }
         public string Nombre { get; set; }
         public TipoDecoradorEnum Tipo { get; set; }

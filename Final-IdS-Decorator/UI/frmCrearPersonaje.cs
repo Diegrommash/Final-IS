@@ -15,6 +15,9 @@ using UI;
 
 public class frmCrearPersonaje : Form
 {
+    private readonly bool _esEdicion;
+    //private readonly IComponente? _personajeOriginal;
+
     private readonly ServicioItem _servicioItem;
     private readonly ServicioPersonaje _servicioPersonaje = new ServicioPersonaje();
 
@@ -38,6 +41,20 @@ public class frmCrearPersonaje : Form
 
         InicializarComponentes();
         _ = CargarOpciones();
+    }
+
+    public frmCrearPersonaje(IComponente personajeExistente)
+    {
+        _servicioItem = new ServicioItem();
+        _servicioPersonaje = new ServicioPersonaje();
+
+        _esEdicion = true;
+        personajeActual = personajeExistente;
+
+        InicializarComponentes();
+        _ = CargarOpciones();
+        RefrescarResumen();
+        //CargarPersonajeExistente(personajeActual);
     }
 
     private void InicializarComponentes()
@@ -99,7 +116,7 @@ public class frmCrearPersonaje : Form
         lblPoder = new Label { AutoSize = true };
         lblDefensa = new Label { AutoSize = true };
 
-        btnCrear = new Button { Text = "Crear", Width = 100 };
+        btnCrear = new Button { Text = _esEdicion == true ? "Modificar" : "Crear" , Width = 100 };
         btnCrear.Click += BtnCrear_Click;
 
         AgregarFila(contenedor, "Nombre:", txtNombre, null, null, 0);
@@ -177,7 +194,7 @@ public class frmCrearPersonaje : Form
 
     private async Task CargarOpciones()
     {
-        var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
+        //var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
 
         var items = await _servicioItem.BuscarTodos();
 
@@ -215,6 +232,40 @@ public class frmCrearPersonaje : Form
         _orden = 0;
         RefrescarResumen();
     }
+
+    private void CargarPersonajeExistente(IComponente personaje)
+    {
+        //personajeActual = personaje.Clonar();
+
+        txtNombre.Text = ServicioPersonaje.ObtenerPersonajeBase(personaje).Nombre;
+
+        var decoradores = ServicioPersonaje.ExtraerDecoradores(personaje);
+
+        foreach (var deco in decoradores)
+        {
+            switch (deco.Item.Tipo)
+            {
+                case TipoDecoradorEnum.Trabajo:
+                    cmbTrabajo.SelectedItem = deco.Item.Id;
+                    break;
+                case TipoDecoradorEnum.Arma:
+                    cmbArma.SelectedItem = deco.Item;
+                    break;
+                case TipoDecoradorEnum.Armadura:
+                    cmbArmadura.SelectedItem = deco.Item;
+                    break;
+                case TipoDecoradorEnum.Joya:
+                    cmbJoya.SelectedItem = deco.Item;
+                    break;
+                case TipoDecoradorEnum.Pocion:
+                    cmbPocion.SelectedItem = deco.Item;
+                    break;
+            }
+        }
+
+        RefrescarResumen();
+    }
+
 
     private void AplicarDecorador(ComboBox combo)
     {
@@ -283,8 +334,18 @@ public class frmCrearPersonaje : Form
             return;
         }
 
-        await _servicioPersonaje.GuardarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
-        MessageBox.Show("Personaje creado con éxito:\n" + personajeActual.ObtenerDescripcion(), "Éxito");
+        if (_esEdicion)
+        {
+           // await _servicioPersonaje.ActualizarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
+            MessageBox.Show("Personaje actualizado con éxito.", "Éxito");
+        }
+        else
+        {
+            await _servicioPersonaje.GuardarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
+            MessageBox.Show("Personaje creado con éxito:\n" + personajeActual.ObtenerDescripcion(), "Éxito");
+        }
+
+        this.DialogResult = DialogResult.OK;
         this.Close();
     }
 }
