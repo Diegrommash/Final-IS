@@ -13,7 +13,7 @@ namespace DAL
 
         public Acceso()
         {
-            _cadenaConexion = Configuracion.ObtenerCadenaConexion("EnTrabajo");
+            _cadenaConexion = Configuracion.ObtenerCadenaConexion("EnCasa");
 
             if (string.IsNullOrWhiteSpace(_cadenaConexion))
                 throw new InvalidOperationException("La cadena de conexión está vacía o no fue configurada.");
