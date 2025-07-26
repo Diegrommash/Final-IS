@@ -143,6 +143,33 @@ BEGIN TRY
     FOREIGN KEY (PersonajeId) REFERENCES Personaje(Id)
     );
 
+    -- Tabla de Misiones
+    CREATE TABLE Mision (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100) NOT NULL,
+    Descripcion NVARCHAR(255) NULL,
+    Dificultad INT NOT NULL DEFAULT 1,
+    EsCompleta BIT NOT NULL DEFAULT 0,
+    EsCompuesta BIT NOT NULL DEFAULT 0
+    );
+    -- Tabla para relaciones Padre-Hijo (Composite)
+    CREATE TABLE MisionRelacion (
+        MisionPadreId INT NOT NULL,
+        MisionHijaId INT NOT NULL,
+        PRIMARY KEY (MisionPadreId, MisionHijaId),
+        FOREIGN KEY (MisionPadreId) REFERENCES Mision(Id) ON DELETE CASCADE,
+        FOREIGN KEY (MisionHijaId) REFERENCES Mision(Id) ON DELETE CASCADE
+    );
+
+    -- Tabla para Recompensas de la Misión
+    CREATE TABLE MisionItemRecompensa (
+        MisionId INT NOT NULL,
+        ItemId INT NOT NULL,
+        PRIMARY KEY (MisionId, ItemId),
+        FOREIGN KEY (MisionId) REFERENCES Mision(Id) ON DELETE CASCADE,
+        FOREIGN KEY (ItemId) REFERENCES Item(Id)
+    );
+
     COMMIT TRANSACTION;
     PRINT 'Transacción completada exitosamente.';
 END TRY

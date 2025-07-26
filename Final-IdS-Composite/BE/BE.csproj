@@ -7,14 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Final-IdS-Decorator\BE\Enums\StatEnum.cs" Link="Enums\StatEnum.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BE\Enums\TipoDecoradorEnum.cs" Link="Enums\TipoDecoradorEnum.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BE\Excepciones\AccesoADatosExcepcion.cs" Link="Excepciones\AccesoADatosExcepcion.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BE\Excepciones\RepositorioExcepcion.cs" Link="Excepciones\RepositorioExcepcion.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BE\Excepciones\ServicioExcepcion.cs" Link="Excepciones\ServicioExcepcion.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BE\Item.cs" Link="Item.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BE\Jugador.cs" Link="Jugador.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Excepciones\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
 
 </Project>
