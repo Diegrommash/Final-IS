@@ -98,7 +98,7 @@ namespace DAL
         }
 
 
-        private Item MapearItem(DataRow fila)
+        public Item MapearItem(DataRow fila)
         {
             return new Item
             {

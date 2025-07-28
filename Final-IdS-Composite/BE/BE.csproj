@@ -16,9 +16,4 @@
     <Compile Include="..\..\Final-IdS-Decorator\BE\Jugador.cs" Link="Jugador.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Excepciones\" />
-    <Folder Include="Enums\" />
-  </ItemGroup>
-
 </Project>

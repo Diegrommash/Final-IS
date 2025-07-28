@@ -14,7 +14,8 @@ namespace UI
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             var servicioLogin = new ServicioLogin();
-            frmLogin.Mostrar(() => new frmMainComposite(), servicioLogin);
+            var servicioMisiones = new ServicioMision();
+            frmLogin.Mostrar(() => new frmListarMisiones(servicioMisiones), servicioLogin);
         }
     }
 }

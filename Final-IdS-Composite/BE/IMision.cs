@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BE
 {
@@ -12,10 +9,21 @@ namespace BE
         string Descripcion { get; }
         int Dificultad { get; }
         bool EstaCompleta { get; }
-        bool EsCompuesta { get; }   
+        bool EsCompuesta { get; }
 
-        List<Item> ObtenerRecompensas();  
-        void Mostrar();
+        /// <summary>
+        /// Hijas de esta misión (en MisionSimple siempre estará vacío).
+        /// </summary>
+        List<IMision> Hijas { get; }
 
+        /// <summary>
+        /// Devuelve todas las recompensas asociadas a la misión.
+        /// </summary>
+        List<Item> ObtenerRecompensas();
+
+        /// <summary>
+        /// Devuelve una representación de texto de la misión.
+        /// </summary>
+        string Mostrar();
     }
 }

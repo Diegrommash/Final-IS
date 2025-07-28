@@ -9,6 +9,7 @@
   <ItemGroup>
     <Compile Include="..\..\Final-IdS-Decorator\DAL\Acceso.cs" Link="Acceso.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\DAL\Loguin.cs" Link="Loguin.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\DAL\RepoItem.cs" Link="RepoItem.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\DAL\RepoUsuario.cs" Link="RepoUsuario.cs" />
   </ItemGroup>
 

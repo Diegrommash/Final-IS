@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BE
 {
@@ -11,23 +9,53 @@ namespace BE
         public int Id { get; set; }
         public string Nombre { get; private set; }
         public string Descripcion { get; private set; }
+
+        /// <summary>
+        /// La dificultad total es la suma de las dificultades de las submisiones.
+        /// </summary>
         public int Dificultad => _submisiones.Sum(m => m.Dificultad);
-        public bool EstaCompleta => _submisiones.All(m => m.EstaCompleta);
+
+        /// <summary>
+        /// Se considera completa solo si todas sus submisiones están completas.
+        /// </summary>
+        public bool EstaCompleta => _forzarCompleta || _submisiones.All(m => m.EstaCompleta);
 
         public bool EsCompuesta => true;
 
+        /// <summary>
+        /// Hijas de esta misión compuesta.
+        /// </summary>
+        public List<IMision> Hijas => _submisiones;
+
         private readonly List<IMision> _submisiones = new();
         private readonly List<Item> _recompensas = new();
+        private bool _forzarCompleta = false;
 
+        // Constructor para creación manual
         public MisionCompuesta(string nombre, string descripcion)
         {
             Nombre = nombre;
             Descripcion = descripcion;
         }
 
+        // Constructor para reconstrucción desde BD
+        public MisionCompuesta(int id, string nombre, string descripcion, bool completa = false)
+        {
+            Id = id;
+            Nombre = nombre;
+            Descripcion = descripcion;
+            if (completa) Completar();
+        }
+
         public void Agregar(IMision mision) => _submisiones.Add(mision);
-        public void Quitar(IMision mision) => _submisiones.Remove(mision);
-        public List<IMision> ObtenerSubmisiones() => _submisiones;
+
+        public void Quitar(IMision mision)
+        {
+            if (_submisiones.Contains(mision))
+                _submisiones.Remove(mision);
+        }
+
+        public List<IMision> ObtenerSubmisiones() => new(_submisiones);
 
         public void AgregarRecompensa(Item item) => _recompensas.Add(item);
 
@@ -39,11 +67,22 @@ namespace BE
             return todas;
         }
 
-        public void Mostrar()
+        /// <summary>
+        /// Permite marcar la misión compuesta como completa independientemente de sus hijos.
+        /// </summary>
+        public void Completar() => _forzarCompleta = true;
+
+        public string Mostrar()
         {
-            Console.WriteLine($"[Misión compuesta] {Nombre} - {Descripcion} (Dif total: {Dificultad})");
+            var estado = EstaCompleta ? "[COMPLETA]" : "";
+            var info = $"[Misión compuesta] {Nombre} - {Descripcion} (Dif total: {Dificultad}) {estado}";
+
             foreach (var sub in _submisiones)
-                sub.Mostrar();
+                info += "\n  -> " + sub.Mostrar();
+
+            return info;
         }
+
+        public override string ToString() => Mostrar();
     }
 }
