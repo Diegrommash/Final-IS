@@ -11,12 +11,14 @@ namespace UI
 {
     public partial class frmListarMisiones : Form
     {
-        private readonly ServicioMision _servicio;
+        private readonly ServicioMision _servicioMision;
+        private readonly ServicioRecompensa _servicioRecompensa;
 
-        public frmListarMisiones(ServicioMision servicio)
+        public frmListarMisiones(ServicioMision servicioMision, ServicioRecompensa servicioRecompensa)
         {
             InitializeComponent();
-            _servicio = servicio;
+            _servicioMision = servicioMision;
+            _servicioRecompensa = servicioRecompensa;
 
             string basePath = Application.StartupPath;
             imageListIcons.ColorDepth = ColorDepth.Depth32Bit;
@@ -34,7 +36,7 @@ namespace UI
         private async Task CargarArbol()
         {
             treeMisiones.Nodes.Clear();
-            var arbol = await _servicio.ObtenerArbol();
+            var arbol = await _servicioMision.ObtenerArbol();
             foreach (var m in arbol)
                 treeMisiones.Nodes.Add(CrearNodo(m));
             treeMisiones.ExpandAll();
@@ -59,7 +61,7 @@ namespace UI
 
         private async void btnCrear_Click(object sender, EventArgs e)
         {
-            using var frm = new frmCrearMision(_servicio);
+            using var frm = new frmCrearMision(_servicioMision, _servicioRecompensa);
             if (frm.ShowDialog() == DialogResult.OK)
                 await CargarArbol();
         }
@@ -75,12 +77,12 @@ namespace UI
 
             var padre = treeMisiones.SelectedNode.Tag as IMision;
             
-            using var selector = new frmSeleccionarMision(_servicio);
+            using var selector = new frmSeleccionarMision(_servicioMision);
             if (selector.ShowDialog() == DialogResult.OK && selector.MisionSeleccionada != null)
             {
                 try
                 {
-                    await _servicio.AsignarMision(padre, selector.MisionSeleccionada);
+                    await _servicioMision.AsignarMision(padre, selector.MisionSeleccionada);
                     MessageBox.Show($"Misión '{selector.MisionSeleccionada.Nombre}' asignada a '{padre.Nombre}'.");
                     await CargarArbol();
                 }
@@ -114,7 +116,7 @@ namespace UI
             {
                 try
                 {
-                    await _servicio.QuitarMision(nodoPadre, nodoHijo);
+                    await _servicioMision.QuitarMision(nodoPadre, nodoHijo);
                     MessageBox.Show("Misión hija quitada correctamente.");
                     await CargarArbol();
                 }
@@ -138,7 +140,7 @@ namespace UI
 
                 if (MessageBox.Show($"¿Eliminar misión '{mision.Nombre}'?", "Confirmar", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    await _servicio.Eliminar(mision);
+                    await _servicioMision.Eliminar(mision);
                     await CargarArbol();
                 }
             }
@@ -157,7 +159,7 @@ namespace UI
                 var mision = treeMisiones.SelectedNode.Tag as IMision;
                 if (mision == null) return;
 
-                await _servicio.CompletarMision(mision);
+                await _servicioMision.CompletarMision(mision);
                 MessageBox.Show("Misión marcada como completada.");
                 await CargarArbol();
             }
@@ -171,5 +173,29 @@ namespace UI
         {
             await CargarArbol();
         }
+
+        private void treeMisiones_MouseMove(object sender, MouseEventArgs e)
+        {
+            TreeNode nodoActual = treeMisiones.GetNodeAt(e.Location);
+
+            if (nodoActual == null || nodoActual.Tag is not IMision mision)
+            {
+                toolTipMision.Hide(treeMisiones);
+                ultimoNodoConTooltip = null;
+                return;
+            }
+
+            if (nodoActual != ultimoNodoConTooltip)
+            {
+                var recompensas = mision.ObtenerRecompensas();
+                string texto = recompensas.Count > 0
+                    ? "Recompensas: " + string.Join(", ", recompensas.ConvertAll(r => r.Nombre))
+                    : "Sin recompensas";
+
+                toolTipMision.SetToolTip(treeMisiones, texto);
+                ultimoNodoConTooltip = nodoActual;
+            }
+        }
+
     }
 }

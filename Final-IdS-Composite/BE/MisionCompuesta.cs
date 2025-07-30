@@ -77,11 +77,22 @@ namespace BE
             var estado = EstaCompleta ? "[COMPLETA]" : "";
             var info = $"[Misión compuesta] {Nombre} - {Descripcion} (Dif total: {Dificultad}) {estado}";
 
+            if (_recompensas.Count > 0)
+            {
+                var recompensasStr = string.Join(", ", _recompensas.ConvertAll(r => r.Nombre));
+                info += $" - Recompensas: {recompensasStr}";
+            }
+            else
+            {
+                info += " - Sin recompensas.";
+            }
+
             foreach (var sub in _submisiones)
                 info += "\n  -> " + sub.Mostrar();
 
             return info;
         }
+
 
         public override string ToString() => Mostrar();
     }

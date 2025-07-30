@@ -8,15 +8,20 @@ namespace UI
 {
     public partial class frmCrearMision : Form
     {
-        private readonly ServicioMision _servicio;
+        private readonly ServicioMision _servicioMision;
+        private readonly ServicioRecompensa _servicioRecompensa;
 
-        public frmCrearMision(ServicioMision servicio)
+        private IList<Item> _itemsDisponibles;
+        private List<Item> _recompensasSeleccionadas = new();
+
+        public frmCrearMision(ServicioMision servicioMision, ServicioRecompensa servicioRecompensa)
         {
             InitializeComponent();
-            _servicio = servicio;
+            _servicioMision = servicioMision;
+            _servicioRecompensa = servicioRecompensa;
         }
 
-        private void frmCrearMision_Load(object sender, EventArgs e)
+        private async void frmCrearMision_Load(object sender, EventArgs e)
         {
             nudDificultad.Minimum = 1;
             nudDificultad.Maximum = 10;
@@ -25,6 +30,12 @@ namespace UI
             {
                 lblDificultad.Visible = nudDificultad.Visible = !chkEsCompuesta.Checked;
             };
+
+            _itemsDisponibles = await _servicioRecompensa.BuscarRecompensas(); // este método deberías tenerlo en tu servicio
+
+            cboRecompensas.DataSource = _itemsDisponibles;
+            cboRecompensas.DisplayMember = "Nombre"; // suponiendo que la clase Item tiene esta propiedad
+            cboRecompensas.ValueMember = "Id";
         }
 
         private async void btnGuardar_Click(object sender, EventArgs e)
@@ -36,13 +47,13 @@ namespace UI
 
                 if (chkEsCompuesta.Checked)
                 {
-                    int id = await _servicio.CrearMisionCompuesta(nombre, descripcion);
+                    int id = await _servicioMision.CrearMisionCompuesta(nombre, descripcion, _recompensasSeleccionadas);
                     MessageBox.Show($"✅ Misión compuesta creada con exito", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
                     int dificultad = (int)nudDificultad.Value;
-                    int id = await _servicio.CrearMisionSimple(nombre, descripcion, dificultad);
+                    int id = await _servicioMision.CrearMisionSimple(nombre, descripcion, dificultad, _recompensasSeleccionadas);
                     MessageBox.Show($"✅ Misión simple creada con exito", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
@@ -72,5 +83,22 @@ namespace UI
             DialogResult = DialogResult.Cancel;
             Close();
         }
+
+        private void btnAgregarRecompensa_Click(object sender, EventArgs e)
+        {
+            if (cboRecompensas.SelectedItem is Item itemSeleccionado &&
+                !_recompensasSeleccionadas.Any(i => i.Id == itemSeleccionado.Id))
+            {
+                _recompensasSeleccionadas.Add(itemSeleccionado);
+                lstRecompensas.DataSource = null;
+                lstRecompensas.DataSource = _recompensasSeleccionadas;
+                lstRecompensas.DisplayMember = "Nombre";
+            }
+            else
+            {
+                MessageBox.Show("El ítem ya fue agregado como recompensa.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
     }
 }

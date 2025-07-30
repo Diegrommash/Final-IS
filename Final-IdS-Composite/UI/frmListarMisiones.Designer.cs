@@ -3,6 +3,7 @@
     partial class frmListarMisiones
     {
         private System.ComponentModel.IContainer components = null;
+
         private System.Windows.Forms.TreeView treeMisiones;
         private System.Windows.Forms.Button btnCrear;
         private System.Windows.Forms.Button btnAsignar;
@@ -11,6 +12,10 @@
         private System.Windows.Forms.Button btnCompletar;
         private System.Windows.Forms.Button btnRefrescar;
         private System.Windows.Forms.ImageList imageListIcons;
+
+        // NUEVOS CAMPOS
+        private System.Windows.Forms.ToolTip toolTipMision;
+        private System.Windows.Forms.TreeNode ultimoNodoConTooltip;
 
         protected override void Dispose(bool disposing)
         {
@@ -24,13 +29,17 @@
             this.components = new System.ComponentModel.Container();
             this.treeMisiones = new System.Windows.Forms.TreeView();
             this.imageListIcons = new System.Windows.Forms.ImageList(this.components);
+            this.toolTipMision = new System.Windows.Forms.ToolTip(this.components); // NUEVO
+
             this.btnCrear = new System.Windows.Forms.Button();
             this.btnAsignar = new System.Windows.Forms.Button();
             this.btnQuitar = new System.Windows.Forms.Button();
             this.btnEliminar = new System.Windows.Forms.Button();
             this.btnCompletar = new System.Windows.Forms.Button();
             this.btnRefrescar = new System.Windows.Forms.Button();
+
             this.SuspendLayout();
+
             // 
             // treeMisiones
             // 
@@ -39,12 +48,15 @@
             this.treeMisiones.Size = new System.Drawing.Size(400, 350);
             this.treeMisiones.TabIndex = 0;
             this.treeMisiones.ImageList = this.imageListIcons;
+            this.treeMisiones.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeMisiones_MouseMove); // NUEVO
+
             // 
             // imageListIcons
             // 
             this.imageListIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imageListIcons.ImageSize = new System.Drawing.Size(16, 16);
             this.imageListIcons.TransparentColor = System.Drawing.Color.Transparent;
+
             // 
             // btnCrear
             // 
@@ -55,6 +67,7 @@
             this.btnCrear.Text = "Crear";
             this.btnCrear.UseVisualStyleBackColor = true;
             this.btnCrear.Click += new System.EventHandler(this.btnCrear_Click);
+
             // 
             // btnAsignar
             // 
@@ -65,6 +78,7 @@
             this.btnAsignar.Text = "Asignar hija";
             this.btnAsignar.UseVisualStyleBackColor = true;
             this.btnAsignar.Click += new System.EventHandler(this.btnAsignar_Click);
+
             // 
             // btnQuitar
             // 
@@ -75,6 +89,7 @@
             this.btnQuitar.Text = "Quitar hija";
             this.btnQuitar.UseVisualStyleBackColor = true;
             this.btnQuitar.Click += new System.EventHandler(this.btnQuitar_Click);
+
             // 
             // btnEliminar
             // 
@@ -85,6 +100,7 @@
             this.btnEliminar.Text = "Eliminar";
             this.btnEliminar.UseVisualStyleBackColor = true;
             this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
+
             // 
             // btnCompletar
             // 
@@ -95,6 +111,7 @@
             this.btnCompletar.Text = "Completar";
             this.btnCompletar.UseVisualStyleBackColor = true;
             this.btnCompletar.Click += new System.EventHandler(this.btnCompletar_Click);
+
             // 
             // btnRefrescar
             // 
@@ -105,6 +122,7 @@
             this.btnRefrescar.Text = "Refrescar";
             this.btnRefrescar.UseVisualStyleBackColor = true;
             this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
+
             // 
             // frmListarMisiones
             // 

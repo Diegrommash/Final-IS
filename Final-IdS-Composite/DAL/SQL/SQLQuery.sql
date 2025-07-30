@@ -57,119 +57,38 @@ END CATCH;
 GO
 
 
-
 -- 6. Crear procedimientos
---Agregar
-CREATE OR ALTER PROCEDURE SP_AGREGAR_MISION
-    @Nombre NVARCHAR(100),
-    @Descripcion NVARCHAR(255) = NULL,
-    @Dificultad INT,
-    @EsCompuesta BIT
+
+-- Asignar recompensas a mision
+CREATE OR ALTER PROCEDURE SP_ASIGNAR_RECOMPENSA
+    @MisionId INT,
+    @ItemId INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
     BEGIN TRY
-        INSERT INTO Mision (Nombre, Descripcion, Dificultad, EsCompuesta)
-        VALUES (@Nombre, @Descripcion, @Dificultad, @EsCompuesta);
 
-        SELECT SCOPE_IDENTITY() AS NuevoId;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
-END;
-GO
-
--- Modificar
-CREATE OR ALTER PROCEDURE SP_MODIFICAR_MISION
-    @Id INT,
-    @Nombre NVARCHAR(100),
-    @Descripcion NVARCHAR(255) = NULL,
-    @Dificultad INT,
-    @EsCompuesta BIT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    BEGIN TRY
-        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @Id)
+        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionId)
         BEGIN
             RAISERROR('La misión no existe.', 16, 1);
             RETURN;
         END
 
-        UPDATE Mision
-        SET Nombre = @Nombre,
-            Descripcion = @Descripcion,
-            Dificultad = @Dificultad,
-            EsCompuesta = @EsCompuesta
-        WHERE Id = @Id;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
-END;
-GO
-
---Eliminar
-CREATE OR ALTER PROCEDURE SP_ELIMINAR_MISION
-    @Id INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    BEGIN TRY
-        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @Id)
+        IF NOT EXISTS (SELECT 1 FROM Item WHERE Id = @ItemId)
         BEGIN
-            RAISERROR('La misión no existe.', 16, 1);
+            RAISERROR('El  no existe.', 16, 1);
             RETURN;
         END
 
-        DELETE FROM Mision WHERE Id = @Id;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
-END;
-GO
-
--- Asignar Misión Padre-Hija (Composite)
-CREATE OR ALTER PROCEDURE SP_ASIGNAR_MISION
-    @MisionPadreId INT,
-    @MisionHijaId INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    BEGIN TRY
-        -- Validaciones
-        IF @MisionPadreId = @MisionHijaId
-        BEGIN
-            RAISERROR('Una misión no puede ser hija de sí misma.', 16, 1);
-            RETURN;
-        END
-
-        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionPadreId)
-        BEGIN
-            RAISERROR('La misión padre no existe.', 16, 1);
-            RETURN;
-        END
-
-        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionHijaId)
-        BEGIN
-            RAISERROR('La misión hija no existe.', 16, 1);
-            RETURN;
-        END
-
-        IF EXISTS (SELECT 1 FROM MisionRelacion WHERE MisionPadreId = @MisionPadreId AND MisionHijaId = @MisionHijaId)
+        IF EXISTS (SELECT 1 FROM MisionItemRecompensa WHERE MisionId = @MisionId AND ItemId = @ItemId)
         BEGIN
             RAISERROR('La relación ya existe.', 16, 1);
             RETURN;
         END
 
-        INSERT INTO MisionRelacion (MisionPadreId, MisionHijaId)
-        VALUES (@MisionPadreId, @MisionHijaId);
+        INSERT INTO MisionItemRecompensa (MisionId, ItemId)
+        VALUES (@MisionId, @ItemId);
     END TRY
     BEGIN CATCH
         THROW;
@@ -177,136 +96,45 @@ BEGIN
 END;
 GO
 
--- Quitar Misión Padre-Hija (Composite)
-CREATE OR ALTER PROCEDURE SP_QUITAR_MISION
-    @MisionPadreId INT,
-    @MisionHijaId INT
+
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_RECOMPENSA
+    @MisionId INT,
+    @ItemId INT
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    BEGIN TRY
-        IF NOT EXISTS (SELECT 1 FROM MisionRelacion WHERE MisionPadreId = @MisionPadreId AND MisionHijaId = @MisionHijaId)
-        BEGIN
-            RAISERROR('No existe la relación especificada.', 16, 1);
-            RETURN;
-        END
-
-        DELETE FROM MisionRelacion
-        WHERE MisionPadreId = @MisionPadreId AND MisionHijaId = @MisionHijaId;
-    END TRY
-    BEGIN CATCH
-        THROW;
-    END CATCH
-END;
-GO
-
--- Obtener árbol de misiones (Composite)
-CREATE OR ALTER PROCEDURE SP_OBTENER_ARBOL_MISIONES
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    ;WITH CTE_Misiones AS (
-        SELECT 
-            m.Id,
-            m.Nombre,
-            m.Descripcion,
-            m.Dificultad,
-            m.EsCompleta,
-            m.EsCompuesta,
-            CAST(NULL AS INT) AS PadreId,
-            CAST(m.Nombre AS NVARCHAR(MAX)) AS Ruta
-        FROM Mision m
-        WHERE m.Id NOT IN (SELECT MisionHijaId FROM MisionRelacion)
-
-        UNION ALL
-
-        SELECT 
-            h.Id,
-            h.Nombre,
-            h.Descripcion,
-            h.Dificultad,
-            h.EsCompleta,
-            h.EsCompuesta,
-            r.MisionPadreId AS PadreId,
-            CAST(cte.Ruta + ' -> ' + h.Nombre AS NVARCHAR(MAX)) AS Ruta
-        FROM MisionRelacion r
-        INNER JOIN Mision h ON r.MisionHijaId = h.Id
-        INNER JOIN CTE_Misiones cte ON r.MisionPadreId = cte.Id
-    )
-    SELECT *
-    FROM CTE_Misiones
-    ORDER BY Ruta;
-END;
-GO
-
--- Obtener subárbol de una misión específica (Composite)
-CREATE OR ALTER PROCEDURE SP_OBTENER_SUBARBOL_MISION
-    @Id INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @Id)
-    BEGIN
-        RAISERROR('La misión solicitada no existe.', 16, 1);
-        RETURN;
-    END
-
-   ;WITH CTE_SubArbol AS (
-        SELECT 
-            m.Id,
-            m.Nombre,
-            m.Descripcion,
-            m.Dificultad,
-            m.EsCompleta,
-            m.EsCompuesta,
-            CAST(NULL AS INT) AS PadreId
-        FROM Mision m
-        WHERE m.Id = @Id
-        
-        UNION ALL
-        
-        SELECT 
-            h.Id,
-            h.Nombre,
-            h.Descripcion,
-            h.Dificultad,
-            h.EsCompleta,
-            h.EsCompuesta,
-            r.MisionPadreId AS PadreId
-        FROM MisionRelacion r
-        INNER JOIN Mision h ON r.MisionHijaId = h.Id
-        INNER JOIN CTE_SubArbol cte ON r.MisionPadreId = cte.Id
-    )
-    SELECT *
-    FROM CTE_SubArbol
-    ORDER BY PadreId, Nombre;
-END;
-GO
-
--- Completar una misión
-CREATE OR ALTER PROCEDURE SP_COMPLETAR_MISION
-    @Id INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
     BEGIN TRY
 
-        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @Id)
+        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionId)
         BEGIN
             RAISERROR('La misión no existe.', 16, 1);
             RETURN;
         END
 
-        UPDATE Mision
-        SET EsCompleta = 1
-        WHERE Id = @Id;
+        IF NOT EXISTS (SELECT 1 FROM Item WHERE Id = @ItemId)
+        BEGIN
+            RAISERROR('El  no existe.', 16, 1);
+            RETURN;     
+        END
+
+        DELETE FROM MisionItemRecompensa WHERE MisionId = @MisionId AND ItemId = @ItemId;
+
     END TRY
     BEGIN CATCH
         THROW;
     END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_RECOMPENSAS
+    @MisionId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT I.Id, I.Nombre, I.Poder, I.Defensa, I.EstadisticaId, I.TipoItemId
+    FROM MisionItemRecompensa MIR
+    JOIN Item I ON I.Id = MIR.ItemId
+    WHERE MIR.MisionId = @MisionId;
 END;
 GO

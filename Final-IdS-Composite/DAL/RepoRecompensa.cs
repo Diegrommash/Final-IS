@@ -13,23 +13,24 @@ namespace DAL
     {
         private readonly Acceso _acceso;
         private readonly RepoItem _repoItem;
-        public RepoRecompensa()
+        
+        public RepoRecompensa(Acceso acceso)
         {
-            _acceso = new Acceso();
-            _repoItem = new RepoItem(_acceso);
+            _acceso = acceso ?? throw new ArgumentNullException(nameof(acceso), "El acceso a datos no puede ser nulo.");
+            _repoItem = new RepoItem(acceso);
         }
 
 
 
-        public async Task<int> Agregar(IMision mision, Item recompensa)
+        public async Task<int> Agregar(int idMision, int idRecompensa)
         {
             try
             {
-                var sql = "SP_AGREGAR_RECOMPENSA";
+                var sql = "SP_ASIGNAR_RECOMPENSA";
                 var parametros = new List<IDbDataParameter>
                 {
-                    _acceso.CrearParametro("@MisionId", mision.Id, DbType.Int32),
-                    _acceso.CrearParametro("@ItemId", recompensa.Id, DbType.Int32)
+                    _acceso.CrearParametro("@MisionId", idMision, DbType.Int32),
+                    _acceso.CrearParametro("@ItemId", idRecompensa, DbType.Int32)
                 };
 
                 var resultado = await _acceso.EscribirAsync(sql, parametros, CommandType.StoredProcedure);
@@ -41,15 +42,15 @@ namespace DAL
             } 
         }
 
-        public async Task<bool> Eliminar(IMision mision, Item recompensa)
+        public async Task<bool> Eliminar(int idMision, int idRecompensa)
         {
             try
             {
                 var sql = "SP_ELIMINAR_RECOMPENSA";
                 var parametros = new List<IDbDataParameter>
                 {
-                   _acceso.CrearParametro("@MisionId", mision.Id, DbType.Int32),
-                   _acceso.CrearParametro("@ItemId", recompensa.Id, DbType.Int32)
+                  _acceso.CrearParametro("@MisionId", idMision, DbType.Int32),
+                    _acceso.CrearParametro("@ItemId", idRecompensa, DbType.Int32)
                 };
 
                 var resultado = await _acceso.EscribirAsync(sql, parametros, CommandType.StoredProcedure);
@@ -85,7 +86,7 @@ namespace DAL
             }
         }
 
-        public async Task<IList<Item>> BuscarItems(IMision mision)
+        public async Task<IList<Item>> BuscarItems()
         {
             try
             {

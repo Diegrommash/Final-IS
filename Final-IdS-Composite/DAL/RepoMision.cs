@@ -7,10 +7,11 @@ namespace DAL
     public class RepoMision
     {
         private readonly Acceso _acceso;
-
-        public RepoMision()
+        private readonly RepoRecompensa _repoRecompensa;
+        public RepoMision(Acceso acceso)
         {
-            _acceso = new Acceso();
+            _acceso = acceso;
+            _repoRecompensa = new RepoRecompensa(_acceso);
         }
 
         //Agregar misión
@@ -156,55 +157,13 @@ namespace DAL
             }
         }
 
-        //reconstrucción del Composite desde DataTable
-        //private List<IMision> ReconstruirArbol(DataTable tabla)
-        //{
-        //    if (tabla == null || tabla.Rows.Count == 0)
-        //        return new List<IMision>();
-
-        //    var misiones = tabla.AsEnumerable().Select(r => new
-        //    {
-        //        Id = r.Field<int>("Id"),
-        //        Nombre = r.Field<string>("Nombre"),
-        //        Descripcion = r.Field<string>("Descripcion"),
-        //        Dificultad = r.Field<int>("Dificultad"),
-        //        EstaCompleta = r.Field<bool>("EsCompleta"),
-        //        EsCompuesta = r.Field<bool>("EsCompuesta"),
-        //        PadreId = r.IsNull("PadreId") ? (int?)null : r.Field<int>("PadreId")
-        //    }).ToList();
-
-        //    //Crear instancias sin relaciones
-        //    var dic = new Dictionary<int, IMision>();
-        //    foreach (var m in misiones)
-        //    {
-        //        IMision obj = m.EsCompuesta
-        //            ? new MisionCompuesta(m.Id, m.Nombre, m.Descripcion, m.EstaCompleta)
-        //            : new MisionSimple(m.Id, m.Nombre, m.Descripcion, m.Dificultad, m.EstaCompleta);
-
-        //        dic[m.Id] = obj;
-        //    }
-
-        //    //Reconstruir relaciones padre-hijo
-        //    foreach (var m in misiones.Where(x => x.PadreId != null))
-        //    {
-        //        if (dic[m.PadreId.Value] is MisionCompuesta padre)
-        //            padre.Hijas.Add(dic[m.Id]);
-        //    }
-
-        //    //Devolver solo raíces
-        //    return misiones.Where(x => x.PadreId == null).Select(x => dic[x.Id]).ToList();
-        //}
-
-        
-        private List<IMision> ReconstruirArbol(DataTable tabla)
+        private List<IMision> ReconstruirArbol(DataTable tabla, Dictionary<int, List<Item>>? recompensasPorMision = null)
         {
-            if (tabla == null || tabla.Rows.Count == 0)
-                return new List<IMision>();
-
             var datos = MapearDatos(tabla);
             var dic = CrearInstancias(datos);
-            ReconstruirRelaciones(datos, dic);
 
+
+            ReconstruirRelaciones(datos, dic);
             return ObtenerRaices(datos, dic);
         }
 
@@ -218,7 +177,7 @@ namespace DAL
                 Dificultad = r.Field<int>("Dificultad"),
                 EstaCompleta = r.Field<bool>("EsCompleta"),
                 EsCompuesta = r.Field<bool>("EsCompuesta"),
-                PadreId = r.IsNull("PadreId") ? (int?)null : r.Field<int>("PadreId")
+                PadreId = r.IsNull("PadreId") ? (int?)null : r.Field<int>("PadreId"),
             }).ToList();
         }
 
@@ -232,6 +191,7 @@ namespace DAL
             public bool EstaCompleta { get; set; }
             public bool EsCompuesta { get; set; }
             public int? PadreId { get; set; }
+            public List<Item> Recompensas { get; set; } = new();
         }
 
         private Dictionary<int, IMision> CrearInstancias(List<MisionDTO> datos)
@@ -274,9 +234,9 @@ namespace DAL
             {
                 var sql = "SP_COMPLETAR_MISION";
                 var parametros = new List<IDbDataParameter>
-        {
-            _acceso.CrearParametro("@Id", id, DbType.Int32)
-        };
+                {
+                    _acceso.CrearParametro("@Id", id, DbType.Int32)
+                };
 
                 var filas = await _acceso.EscribirAsync(sql, parametros);
                 return filas > 0;

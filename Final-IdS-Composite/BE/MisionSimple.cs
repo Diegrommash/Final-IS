@@ -43,7 +43,14 @@ namespace BE
 
         public string Mostrar()
         {
-            return $"[Misión simple] {Nombre} - {Descripcion} (Dif: {Dificultad}) {(EstaCompleta ? "[COMPLETA]" : "")}";
+            string estado = EstaCompleta ? "[COMPLETA]" : "";
+            string textoBase = $"[Misión simple] {Nombre} - {Descripcion} (Dif: {Dificultad}) {estado}";
+
+            if (_recompensas.Count == 0)
+                return textoBase + " - Sin recompensas.";
+
+            var recompensasStr = string.Join(", ", _recompensas.ConvertAll(r => r.Nombre));
+            return $"{textoBase} - Recompensas: {recompensasStr}";
         }
 
         public override string ToString() => Mostrar();

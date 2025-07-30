@@ -6,15 +6,19 @@ namespace BLL
 {
     public class ServicioMision
     {
-        private readonly RepoMision _repo;
+        private readonly Acceso _acceso;
+        private readonly RepoMision _repoMision;
+        private readonly RepoRecompensa _repoRecompensa;
 
         public ServicioMision()
         {
-            _repo = new RepoMision();
+            _acceso = new Acceso();
+            _repoMision = new RepoMision(_acceso);
+            _repoRecompensa = new RepoRecompensa(_acceso);
         }
 
         //Crear misión simple
-        public async Task<int> CrearMisionSimple(string nombre, string descripcion, int dificultad)
+        public async Task<int> CrearMisionSimple(string nombre, string descripcion, int dificultad, List<Item>? recompensas = null)
         {
             try
             {
@@ -25,16 +29,32 @@ namespace BLL
                     throw new ArgumentException("La dificultad debe ser mayor a 0.");
 
                 var mision = new MisionSimple(nombre, descripcion, dificultad);
-                return await _repo.Agregar(mision);
+
+                await _acceso.ComenzarTransaccionAsync();
+
+                var idMision = await _repoMision.Agregar(mision);
+
+                if (recompensas != null && recompensas.Count > 0)
+                {
+                    foreach (var item in recompensas)
+                    {
+                        await _repoRecompensa.Agregar(idMision, item.Id);
+                    }
+                }
+                
+                await _acceso.ConfirmarTransaccionAsync();
+
+                return idMision;
             }
             catch (RepositorioExcepcion ex)
             {
+                await  _acceso.CancelarTransaccionAsync();
                 throw new ServicioExcepcion("Error al crear mision simple", ex);
             }       
         }
 
         //Crear misión compuesta
-        public async Task<int> CrearMisionCompuesta(string nombre, string descripcion)
+        public async Task<int> CrearMisionCompuesta(string nombre, string descripcion, List<Item>? recompensas = null)
         {
             try
             {
@@ -42,7 +62,21 @@ namespace BLL
                     throw new ArgumentException("El nombre de la misión no puede estar vacío.");
 
                 var mision = new MisionCompuesta(nombre, descripcion);
-                return await _repo.Agregar(mision);
+                await _acceso.ComenzarTransaccionAsync();
+
+                var idMision = await _repoMision.Agregar(mision);
+
+                if (recompensas != null && recompensas.Count > 0)
+                {
+                    foreach (var item in recompensas)
+                    {
+                        await _repoRecompensa.Agregar(idMision, item.Id);
+                    }
+                }
+
+                await _acceso.ConfirmarTransaccionAsync();
+
+                return idMision;
             }
             catch (RepositorioExcepcion ex)
             {
@@ -57,7 +91,7 @@ namespace BLL
             try
             {
                 if (mision == null) throw new ArgumentNullException(nameof(mision));
-                return await _repo.Modificar(mision);
+                return await _repoMision.Modificar(mision);
             }
             catch (RepositorioExcepcion ex)
             {
@@ -72,7 +106,7 @@ namespace BLL
             try
             {
                 if (mision == null) throw new ArgumentNullException(nameof(mision));
-                return await _repo.Eliminar(mision);
+                return await _repoMision.Eliminar(mision);
             }
             catch (RepositorioExcepcion ex)
             {
@@ -98,7 +132,7 @@ namespace BLL
                 if (EsDescendiente(padre, hija))
                     throw new ServicioExcepcion("No se puede asignar esta misión porque generaría un ciclo en la jerarquía.");
 
-                return await _repo.Asignar(padre, hija);
+                return await _repoMision.Asignar(padre, hija);
             }
             catch (RepositorioExcepcion ex)
             {
@@ -118,7 +152,7 @@ namespace BLL
                 if (!padre.EsCompuesta)
                     throw new InvalidOperationException("No se puede quitar una misión hija de una misión simple.");
 
-                return await _repo.Quitar(padre, hija);
+                return await _repoMision.Quitar(padre, hija);
             }
             catch (RepositorioExcepcion ex)
             {
@@ -132,7 +166,7 @@ namespace BLL
         {
             try
             {
-                return await _repo.ObtenerArbol();
+                return await _repoMision.ObtenerArbol();
             }
             catch (RepositorioExcepcion ex)
             {
@@ -145,7 +179,7 @@ namespace BLL
         {
             try
             {
-                return await _repo.ObtenerPorId(id);
+                return await _repoMision.ObtenerPorId(id);
             }
             catch (RepositorioExcepcion ex)
             {
@@ -168,7 +202,7 @@ namespace BLL
                             throw new InvalidOperationException($"No se puede completar la misión '{mision.Nombre}' porque la hija '{hija.Nombre}' no está completa.");
                     }
                 }
-                await _repo.MarcarComoCompleta(mision.Id);
+                await _repoMision.MarcarComoCompleta(mision.Id);
             }
             catch (RepositorioExcepcion ex)
             {

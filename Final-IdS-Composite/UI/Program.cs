@@ -15,7 +15,8 @@ namespace UI
             ApplicationConfiguration.Initialize();
             var servicioLogin = new ServicioLogin();
             var servicioMisiones = new ServicioMision();
-            frmLogin.Mostrar(() => new frmListarMisiones(servicioMisiones), servicioLogin);
+            var servicioRecompensas = new ServicioRecompensa();
+            frmLogin.Mostrar(() => new frmListarMisiones(servicioMisiones, servicioRecompensas), servicioLogin);
         }
     }
 }
