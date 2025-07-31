@@ -104,7 +104,7 @@ namespace DAL
         {
             try
             {
-                var sql = "SP_QUITAR_MISION"; // 🔹 corregido
+                var sql = "SP_QUITAR_MISION";
                 var parametros = new List<IDbDataParameter>
                 {
                     _acceso.CrearParametro("@MisionPadreId", padre.Id, DbType.Int32),
@@ -127,7 +127,12 @@ namespace DAL
                 var sql = "SP_OBTENER_ARBOL_MISIONES";
                 var tabla = await _acceso.LeerAsync(sql, null);
 
-                return ReconstruirArbol(tabla);
+                if (tabla == null)
+                {
+                    throw new RepositorioExcepcion("Error: La tabla obtenida es nula.");
+                }
+
+                return await ReconstruirArbol(tabla);
             }
             catch (AccesoADatosExcepcion ex)
             {
@@ -135,7 +140,6 @@ namespace DAL
             }
         }
 
-        //Obtener una misión por Id (subárbol)
         public async Task<IMision?> ObtenerPorId(int id)
         {
             try
@@ -147,8 +151,13 @@ namespace DAL
                 };
 
                 var tabla = await _acceso.LeerAsync(sql, parametros);
-                var lista = ReconstruirArbol(tabla);
 
+                if (tabla == null)
+                {
+                    throw new RepositorioExcepcion("Error: La tabla obtenida es nula.");
+                }
+
+                var lista = await ReconstruirArbol(tabla);
                 return lista.FirstOrDefault();
             }
             catch (AccesoADatosExcepcion ex)
@@ -157,31 +166,39 @@ namespace DAL
             }
         }
 
-        private List<IMision> ReconstruirArbol(DataTable tabla, Dictionary<int, List<Item>>? recompensasPorMision = null)
+        private async Task<List<IMision>> ReconstruirArbol(DataTable tabla)
         {
-            var datos = MapearDatos(tabla);
+            var datos = await MapearDatos(tabla); 
             var dic = CrearInstancias(datos);
-
 
             ReconstruirRelaciones(datos, dic);
             return ObtenerRaices(datos, dic);
         }
 
-        private List<MisionDTO> MapearDatos(DataTable tabla)
+        private async Task<List<MisionDTO>> MapearDatos(DataTable tabla)
         {
-            return tabla.AsEnumerable().Select(r => new MisionDTO
+            var datos = new List<MisionDTO>();
+
+            foreach (var r in tabla.AsEnumerable())
             {
-                Id = r.Field<int>("Id"),
-                Nombre = r.Field<string>("Nombre"),
-                Descripcion = r.Field<string>("Descripcion"),
-                Dificultad = r.Field<int>("Dificultad"),
-                EstaCompleta = r.Field<bool>("EsCompleta"),
-                EsCompuesta = r.Field<bool>("EsCompuesta"),
-                PadreId = r.IsNull("PadreId") ? (int?)null : r.Field<int>("PadreId"),
-            }).ToList();
+                var misionDTO = new MisionDTO
+                {
+                    Id = r.Field<int>("Id"),
+                    Nombre = r.Field<string?>("Nombre") ?? string.Empty,
+                    Descripcion = r.Field<string?>("Descripcion") ?? string.Empty,
+                    Dificultad = r.Field<int>("Dificultad"),
+                    EstaCompleta = r.Field<bool>("EsCompleta"),
+                    EsCompuesta = r.Field<bool>("EsCompuesta"),
+                    PadreId = r.IsNull("PadreId") ? (int?)null : r.Field<int>("PadreId"),
+                    Recompensas = await _repoRecompensa.BuscarRecompensasMision(r.Field<int>("Id"))
+                };
+
+                datos.Add(misionDTO);
+            }
+
+            return datos;
         }
 
-        // DTO para reconstrucción
         private class MisionDTO
         {
             public int Id { get; set; }
@@ -201,8 +218,8 @@ namespace DAL
             foreach (var m in datos)
             {
                 IMision obj = m.EsCompuesta
-                    ? new MisionCompuesta(m.Id, m.Nombre, m.Descripcion, m.EstaCompleta)
-                    : new MisionSimple(m.Id, m.Nombre, m.Descripcion, m.Dificultad, m.EstaCompleta);
+                    ? new MisionCompuesta(m.Id, m.Nombre, m.Descripcion, m.Recompensas, m.EstaCompleta)
+                    : new MisionSimple(m.Id, m.Nombre, m.Descripcion, m.Dificultad, m.Recompensas, m.EstaCompleta);
 
                 dic[m.Id] = obj;
             }
@@ -227,7 +244,6 @@ namespace DAL
                 .ToList();
         }
 
-
         public async Task<bool> MarcarComoCompleta(int id)
         {
             try
@@ -246,5 +262,6 @@ namespace DAL
                 throw new RepositorioExcepcion("Error al completar misión", ex);
             }
         }
+
     }
 }

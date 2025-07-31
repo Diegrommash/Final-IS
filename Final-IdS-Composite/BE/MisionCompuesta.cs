@@ -28,7 +28,7 @@ namespace BE
         public List<IMision> Hijas => _submisiones;
 
         private readonly List<IMision> _submisiones = new();
-        private readonly List<Item> _recompensas = new();
+        private readonly List<Item> _recompensas;
         private bool _forzarCompleta = false;
 
         // Constructor para creación manual
@@ -39,11 +39,12 @@ namespace BE
         }
 
         // Constructor para reconstrucción desde BD
-        public MisionCompuesta(int id, string nombre, string descripcion, bool completa = false)
+        public MisionCompuesta(int id, string nombre, string descripcion, List<Item> recompensas, bool completa = false)
         {
             Id = id;
             Nombre = nombre;
             Descripcion = descripcion;
+            _recompensas = recompensas ?? new List<Item>();
             if (completa) Completar();
         }
 

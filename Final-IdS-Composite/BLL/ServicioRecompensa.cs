@@ -33,7 +33,6 @@ namespace BLL
             }
             catch (RepositorioExcepcion ex)
             {
-
                 throw new ServicioExcepcion("Error al agregar la recompensa", ex);
             }
 
@@ -51,7 +50,6 @@ namespace BLL
             }
             catch (RepositorioExcepcion ex)
             {
-
                 throw new ServicioExcepcion("Error al Eliminar la recompensa", ex);
             }
 
@@ -63,11 +61,10 @@ namespace BLL
             {
                 if (mision == null) throw new ArgumentNullException(nameof(mision), "La misión no puede ser nula.");
 
-                return await _repoRecompensa.BuscarRecompensasMision(mision);
+                return await _repoRecompensa.BuscarRecompensasMision(mision.Id);
             }
             catch (RepositorioExcepcion ex)
             {
-
                 throw new ServicioExcepcion("Error al buscar las recompensas de la mision", ex);
             }
 
@@ -77,15 +74,13 @@ namespace BLL
         {
             try
             {
-
                 return await _repoRecompensa.BuscarItems();
             }
             catch (RepositorioExcepcion ex)
             {
-
                 throw new ServicioExcepcion("Error al buscar las recompensas de la mision", ex);
             }
-
         }
+
     }
 }

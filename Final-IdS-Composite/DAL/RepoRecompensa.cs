@@ -62,14 +62,14 @@ namespace DAL
             }
         }
 
-        public async Task<List<Item>> BuscarRecompensasMision(IMision mision)
+        public async Task<List<Item>> BuscarRecompensasMision(int id)
         {
             try
             {
                 var sql = "SP_BUSCAR_RECOMPENSAS";
                 var parametros = new List<IDbDataParameter>
                 {
-                     _acceso.CrearParametro("@MisionId", mision.Id, DbType.Int32)
+                     _acceso.CrearParametro("@MisionId", id, DbType.Int32)
                 };
 
                 var resultado = await _acceso.LeerAsync(sql, parametros, CommandType.StoredProcedure);

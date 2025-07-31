@@ -9,7 +9,8 @@ GO
 USE [Final-DB];
 GO
 
--- 3. Eliminar procedimientos si existen
+-- 3. Eliminar sp si existen
+-- sp del decorator
 IF OBJECT_ID('SP_LOGIN_JUGADOR', 'P') IS NOT NULL DROP PROCEDURE SP_LOGIN_JUGADOR;
 IF OBJECT_ID('SP_BUSCAR_TODOS_ITEM', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_TODOS_ITEM;
 IF OBJECT_ID('SP_GUARDAR_PERSONAJE', 'P') IS NOT NULL DROP PROCEDURE SP_GUARDAR_PERSONAJE;
@@ -18,6 +19,7 @@ IF OBJECT_ID('SP_BUSCAR_ITEMS_DE_PERSONAJE_ORDENADOS', 'P') IS NOT NULL DROP PRO
 IF OBJECT_ID('SP_BUSCAR_PERSONAJE', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_PERSONAJE;
 IF OBJECT_ID('SP_GUARDAR_PERSONAJE_DE_JUGADOR', 'P') IS NOT NULL DROP PROCEDURE SP_GUARDAR_PERSONAJE_DE_JUGADOR;
 IF OBJECT_ID('SP_BUSCAR_PERSONAJES_DE_JUGADOR', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_PERSONAJES_DE_JUGADOR;
+-- sp del composite
 IF OBJECT_ID('SP_AGREGAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_AGREGAR_MISION;
 IF OBJECT_ID('SP_MODIFICAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_MODIFICAR_MISION;
 IF OBJECT_ID('SP_ELIMINAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_ELIMINAR_MISION;
@@ -26,9 +28,13 @@ IF OBJECT_ID('SP_QUITAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_QUITAR_MISIO
 IF OBJECT_ID('SP_OBTENER_ARBOL_MISIONES', 'P') IS NOT NULL DROP PROCEDURE SP_OBTENER_ARBOL_MISIONES;
 IF OBJECT_ID('SP_OBTENER_SUBARBOL_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_OBTENER_SUBARBOL_MISION;
 IF OBJECT_ID('SP_COMPLETAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_COMPLETAR_MISION;
+IF OBJECT_ID('SP_ASIGNAR_RECOMPENSA', 'P') IS NOT NULL DROP PROCEDURE SP_ASIGNAR_RECOMPENSA;
+IF OBJECT_ID('SP_ELIMINAR_RECOMPENSA', 'P') IS NOT NULL DROP PROCEDURE SP_ELIMINAR_RECOMPENSA;
+IF OBJECT_ID('SP_BUSCAR_RECOMPENSAS', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_RECOMPENSAS;
 GO
 
--- 4. Eliminar tablas en orden correcto
+-- 4. Eliminar tablas
+-- tablas decorator
 IF OBJECT_ID('MisionItemRecompensa', 'U') IS NOT NULL DROP TABLE MisionItemRecompensa;
 IF OBJECT_ID('MisionRelacion', 'U') IS NOT NULL DROP TABLE MisionRelacion;
 IF OBJECT_ID('Mision', 'U') IS NOT NULL DROP TABLE Mision;
@@ -39,8 +45,12 @@ IF OBJECT_ID('Item', 'U') IS NOT NULL DROP TABLE Item;
 IF OBJECT_ID('Estadistica', 'U') IS NOT NULL DROP TABLE Estadistica;
 IF OBJECT_ID('TipoItem', 'U') IS NOT NULL DROP TABLE TipoItem;
 IF OBJECT_ID('Jugador', 'U') IS NOT NULL DROP TABLE Jugador;
+-- tablas composite
+IF OBJECT_ID('Mision', 'U') IS NOT NULL DROP TABLE Mision;
+IF OBJECT_ID('MisionRelacion', 'U') IS NOT NULL DROP TABLE MisionRelacion;
+IF OBJECT_ID('MisionItemRecompensa', 'U') IS NOT NULL DROP TABLE MisionItemRecompensa;
 GO
--- 5. Crear tablas y poblar datos dentro de transacción
+-- 5. Crear tablas y poblar datos
 BEGIN TRY
     BEGIN TRANSACTION;
 
@@ -129,7 +139,7 @@ BEGIN TRY
         PersonajeId INT NOT NULL,
         ItemId INT NOT NULL,
         Orden INT NOT NULL,
-        PRIMARY KEY (PersonajeId, ItemId),
+        PRIMARY KEY (PersonajeId, ItemId, Orden),
         FOREIGN KEY (PersonajeId) REFERENCES Personaje(Id),
         FOREIGN KEY (ItemId) REFERENCES Item(Id)
     );
@@ -282,7 +292,6 @@ BEGIN
 END;
 GO
 
--- 7.SP de Misiones (CRUD + Relaciones + Árbol)
 CREATE OR ALTER PROCEDURE SP_AGREGAR_MISION
     @Nombre NVARCHAR(100),
     @Descripcion NVARCHAR(255) = NULL,
@@ -466,5 +475,84 @@ BEGIN
     BEGIN CATCH
         THROW;
     END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE SP_ASIGNAR_RECOMPENSA
+    @MisionId INT,
+    @ItemId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+
+        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionId)
+        BEGIN
+            RAISERROR('La misión no existe.', 16, 1);
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM Item WHERE Id = @ItemId)
+        BEGIN
+            RAISERROR('El  no existe.', 16, 1);
+            RETURN;
+        END
+
+        IF EXISTS (SELECT 1 FROM MisionItemRecompensa WHERE MisionId = @MisionId AND ItemId = @ItemId)
+        BEGIN
+            RAISERROR('La relación ya existe.', 16, 1);
+            RETURN;
+        END
+
+        INSERT INTO MisionItemRecompensa (MisionId, ItemId)
+        VALUES (@MisionId, @ItemId);
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_RECOMPENSA
+    @MisionId INT,
+    @ItemId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+
+        IF NOT EXISTS (SELECT 1 FROM Mision WHERE Id = @MisionId)
+        BEGIN
+            RAISERROR('La misión no existe.', 16, 1);
+            RETURN;
+        END
+
+        IF NOT EXISTS (SELECT 1 FROM Item WHERE Id = @ItemId)
+        BEGIN
+            RAISERROR('El  no existe.', 16, 1);
+            RETURN;     
+        END
+
+        DELETE FROM MisionItemRecompensa WHERE MisionId = @MisionId AND ItemId = @ItemId;
+
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_RECOMPENSAS
+    @MisionId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT I.Id, I.Nombre, I.Poder, I.Defensa, I.EstadisticaId, I.TipoItemId
+    FROM MisionItemRecompensa MIR
+    JOIN Item I ON I.Id = MIR.ItemId
+    WHERE MIR.MisionId = @MisionId;
 END;
 GO
