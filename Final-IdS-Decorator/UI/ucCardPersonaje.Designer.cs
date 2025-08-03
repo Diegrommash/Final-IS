@@ -24,13 +24,14 @@
             lblPoder = new Label();
             lblDefensa = new Label();
             btnModificar = new Button();
+            btnEliminar = new Button();
             SuspendLayout();
             // 
             // lblNombrePersonaje
             // 
             lblNombrePersonaje.AutoSize = true;
             lblNombrePersonaje.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            lblNombrePersonaje.Location = new Point(101, 9);
+            lblNombrePersonaje.Location = new Point(149, 18);
             lblNombrePersonaje.Name = "lblNombrePersonaje";
             lblNombrePersonaje.Size = new Size(65, 19);
             lblNombrePersonaje.TabIndex = 0;
@@ -65,19 +66,30 @@
             // 
             // btnModificar
             // 
-            btnModificar.Location = new Point(76, 193);
+            btnModificar.Location = new Point(35, 193);
             btnModificar.Name = "btnModificar";
-            btnModificar.Size = new Size(220, 25);
+            btnModificar.Size = new Size(131, 25);
             btnModificar.TabIndex = 4;
             btnModificar.Text = "Modificar";
             btnModificar.UseVisualStyleBackColor = true;
             btnModificar.Click += btnModificar_Click;
+            // 
+            // btnEliminar
+            // 
+            btnEliminar.Location = new Point(205, 193);
+            btnEliminar.Name = "btnEliminar";
+            btnEliminar.Size = new Size(131, 25);
+            btnEliminar.TabIndex = 5;
+            btnEliminar.Text = "Eliminar";
+            btnEliminar.UseVisualStyleBackColor = true;
+            btnEliminar.Click += btnEliminar_Click;
             // 
             // ucCardPersonaje
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BorderStyle = BorderStyle.FixedSingle;
+            Controls.Add(btnEliminar);
             Controls.Add(lblNombrePersonaje);
             Controls.Add(lstItems);
             Controls.Add(lblPoder);
@@ -88,5 +100,6 @@
             ResumeLayout(false);
             PerformLayout();
         }
+        private Button btnEliminar;
     }
 }

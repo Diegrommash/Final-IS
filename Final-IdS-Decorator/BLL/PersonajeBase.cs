@@ -25,6 +25,12 @@ namespace BLL.Decoradores
             Nombre = nombre;
         }
 
+        public PersonajeBase(int id, string nombre)
+        {
+            Id = id;
+            Nombre = nombre;
+        }
+
         public virtual string ObtenerDescripcion() => $"\n🧑personaje: {Nombre} ";
         public virtual int ObtenerPoder() => 0;
         public virtual int ObtenerDefensa() => 0;

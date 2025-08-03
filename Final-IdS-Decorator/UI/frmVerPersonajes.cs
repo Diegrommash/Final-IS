@@ -31,6 +31,7 @@ namespace UI
                 var card = new ucCardPersonaje();
                 card.CargarPersonaje(personaje);
                 card.OnModificarPersonaje += Card_OnModificarPersonaje;
+                card.OnEliminarPersonaje += Card_OnEliminarPersonaje;
                 flpCards.Controls.Add(card);
             }
         }
@@ -43,5 +44,23 @@ namespace UI
             if (resultado == DialogResult.OK)
                 await CargarPersonajesAsync();
         }
+
+        private async void Card_OnEliminarPersonaje(object? sender, IComponente personaje)
+        {
+            var confirmResult = MessageBox.Show("¿Estás seguro de que deseas eliminar este personaje?", "Confirmar eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirmResult == DialogResult.Yes)
+            {
+                try
+                {
+                    await _servicioPersonaje.EliminarPersonajeAsync(personaje);
+                    await CargarPersonajesAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error al eliminar el personaje: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
     }
 }

@@ -121,11 +121,6 @@ public class frmCrearPersonaje : Form
         btnCrear.Click += BtnCrear_Click;
 
         AgregarFila(contenedor, "Nombre:", txtNombre, null, null, 0);
-        //AgregarFila(contenedor, "Trabajo:", cmbTrabajo, () => AplicarDecorador(cmbTrabajo), () => QuitarDecorador(TipoDecoradorEnum.Trabajo), 1);
-        //AgregarFila(contenedor, "Arma:", cmbArma, () => AplicarDecorador(cmbArma), () => QuitarDecorador(TipoDecoradorEnum.Arma), 2);
-        //AgregarFila(contenedor, "Armadura:", cmbArmadura, () => AplicarDecorador(cmbArmadura), () => QuitarDecorador(TipoDecoradorEnum.Armadura), 3);
-        //AgregarFila(contenedor, "Joya:", cmbJoya, () => AplicarDecorador(cmbJoya), () => QuitarDecorador(TipoDecoradorEnum.Joya), 4);
-        //AgregarFila(contenedor, "Poción:", cmbPocion, () => AplicarDecorador(cmbPocion), () => QuitarDecorador(TipoDecoradorEnum.Pocion), 5);
 
         AgregarFila(contenedor, "Trabajo:", cmbTrabajo,
             () => AplicarDecorador(cmbTrabajo),
@@ -211,7 +206,6 @@ public class frmCrearPersonaje : Form
 
     private async Task CargarOpciones()
     {
-        //var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
 
         var items = await _servicioItem.BuscarTodos();
 
@@ -285,7 +279,6 @@ public class frmCrearPersonaje : Form
         RefrescarResumen();
     }
 
-
     private void AplicarDecorador(ComboBox combo)
     {
         if (combo.SelectedItem is not Item item || _personajeActual == null)
@@ -314,29 +307,9 @@ public class frmCrearPersonaje : Form
             if (combo.SelectedItem is not Item item || _personajeActual == null)
                 return;
 
-            IComponente actual = _personajeActual;
-            IComponente? anterior = null;
+            _servicioPersonaje.ValidarQuitarItem(_personajeActual, item);
+            _personajeActual = _servicioPersonaje.QuitarDecorador(_personajeActual, item.Id);
 
-            while (actual is Decorador deco)
-            {
-                _servicioPersonaje.ValidarQuitarItem(deco, item);
-                if (deco.Id == item.Id)
-                {
-                    if (anterior == null)
-                    {
-                        // Si es el primer decorador de la cadena, apunta directamente al siguiente
-                        _personajeActual = deco.ObtenerPersonajeInterno();
-                    }
-                    else if (anterior is Decorador decoradorAnterior)
-                    {
-                        // Reconecta el decorador anterior con el siguiente
-                        decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
-                    }
-                    break;
-                }
-                anterior = actual;
-                actual = deco.ObtenerPersonajeInterno();
-            }
             RefrescarResumen();
         }
         catch (Exception ex)
@@ -344,72 +317,6 @@ public class frmCrearPersonaje : Form
             MessageBox.Show($"Error al quitar decorador:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
-
-    private void QuitarDecorador(TipoDecoradorEnum tipo)
-    {
-        if (_personajeActual == null) return;
-
-        IComponente actual = _personajeActual;
-        IComponente? anterior = null;
-
-        while (actual is Decorador deco)
-        {
-            if (deco.Tipo == tipo)
-            {
-                if (anterior == null)
-                {
-                    _personajeActual = deco.ObtenerPersonajeInterno();
-                }
-                else if (anterior is Decorador decoradorAnterior)
-                {
-                    decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
-                }
-                break;
-            }
-            anterior = actual;
-            actual = deco.ObtenerPersonajeInterno();
-        }
-
-        RefrescarResumen();
-    }
-
-    //private void QuitarDecorador(int idDecorador)
-    //{
-    //    try
-    //    {
-    //        if (_personajeActual == null) return;
-
-    //        IComponente actual = _personajeActual;
-    //        IComponente? anterior = null;
-
-    //        while (actual is Decorador deco)
-    //        {
-    //            _servicioPersonaje.ValidarQuitarItem(deco, c);
-    //            if (deco.Id == idDecorador)
-    //            {
-    //                if (anterior == null)
-    //                {
-    //                    // Si es el primer decorador de la cadena, apunta directamente al siguiente
-    //                    _personajeActual = deco.ObtenerPersonajeInterno();
-    //                }
-    //                else if (anterior is Decorador decoradorAnterior)
-    //                {
-    //                    // Reconecta el decorador anterior con el siguiente
-    //                    decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
-    //                }
-    //                break;
-    //            }
-    //            anterior = actual;
-    //            actual = deco.ObtenerPersonajeInterno();
-    //        }
-    //        RefrescarResumen();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        MessageBox.Show($"Error al quitar decorador:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-    //    }
-    //}
-
 
     private void RefrescarResumen()
     {
@@ -434,7 +341,7 @@ public class frmCrearPersonaje : Form
 
         if (_esEdicion)
         {
-            // await _servicioPersonaje.ActualizarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
+            await _servicioPersonaje.ActualizarPersonajeAsync(_personajeActual);
             MessageBox.Show("Personaje actualizado con éxito.", "Éxito");
         }
         else

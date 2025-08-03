@@ -47,6 +47,44 @@ namespace BLL
             }
         }
 
+        public async Task<bool> EliminarPersonajeAsync(IComponente componente)
+        {
+            try
+            {
+                var personaje = ObtenerPersonajeBase(componente);
+                var resultado = await _repoPersonaje.EliminarPersonaje(personaje.Id);
+                return resultado;
+            }
+            catch (RepositorioExcepcion ex)
+            {
+                await _acceso.CancelarTransaccionAsync();
+                throw new ServicioExcepcion("Error al eliminar el personaje", ex);
+            }
+        }
+
+        public async Task<bool> ActualizarPersonajeAsync(IComponente componente)
+        {
+            try
+            {
+                var personajeBase = ObtenerPersonajeBase(componente);
+                var items = ExtraerDecoradores(componente);
+
+                await _acceso.ComenzarTransaccionAsync();
+                await _repoPersonaje.EliminarItemsPersonaje(personajeBase.Id);
+                foreach (var (item, orden) in items)
+                {
+                    await _repoItem.Guardar(personajeBase.Id, item.Id, orden);
+                }
+                await _acceso.ConfirmarTransaccionAsync();
+                return true;
+            }
+            catch (RepositorioExcepcion ex)
+            {
+                await _acceso.CancelarTransaccionAsync();
+                throw new ServicioExcepcion("Error al actualizar el personaje", ex);
+            }
+        }
+
         public async Task<List<IComponente>> BuscarPersonajes(Jugador jugador)
         {
             try
@@ -80,7 +118,7 @@ namespace BLL
         {
             try
             {
-                IComponente personajeActual = new PersonajeBase(personaje.Nombre);
+                IComponente personajeActual = new PersonajeBase(personaje.Id, personaje.Nombre);
 
                 foreach (var item in personaje.Items)
                 {
@@ -96,6 +134,78 @@ namespace BLL
 
         }
 
+        public IComponente QuitarDecorador(IComponente personaje, int itemId)
+        {
+            if (personaje == null)
+                return null;
+
+            IComponente actual = personaje;
+            IComponente anterior = null;
+
+            while (actual is Decorador deco)
+            {
+                if (deco.Id == itemId)
+                {
+                    if (anterior == null)
+                    {
+                        // Si el decorador a eliminar es el primero
+                        return deco.ObtenerPersonajeInterno();
+                    }
+                    else if (anterior is Decorador decoradorAnterior)
+                    {
+                        // Reconectar la cadena quitando el decorador
+                        decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
+                        return personaje;
+                    }
+                }
+
+                anterior = actual;
+                actual = deco.ObtenerPersonajeInterno();
+            }
+
+            return personaje;
+        }
+
+        #region Extraccion decoradores
+        public static List<(Item Item, int Orden)> ExtraerDecoradores(IComponente personajeDecorado)
+        {
+            var resultado = new List<(Item, int)>();
+            int orden = 1;
+
+            while (personajeDecorado is Decorador decorador)
+            {
+                var item = new Item
+                {
+                    Id = decorador.Id,
+                    Nombre = decorador.Nombre,
+                    Poder = decorador.Poder,
+                    Defensa = decorador.Defensa,
+                    Tipo = decorador.Tipo
+                };
+
+                resultado.Add((item, orden));
+                orden++;
+
+                personajeDecorado = decorador.ObtenerPersonajeInterno();
+            }
+
+            resultado.Reverse();
+            return resultado;
+        }
+
+        public static PersonajeBase ObtenerPersonajeBase(IComponente componente)
+        {
+            while (componente is Decorador decorador)
+            {
+                componente = decorador.ObtenerPersonajeInterno();
+            }
+
+            return componente as PersonajeBase
+                ?? throw new InvalidCastException("No se pudo encontrar el personaje base");
+        }
+        #endregion
+
+        #region Metodos con orden
         public IComponente QuitarDecoradorPorOrden(IComponente personaje, int ordenAEliminar)
         {
             var decoradores = ExtraerDecoradores(personaje)
@@ -136,44 +246,7 @@ namespace BLL
 
             return nuevoPersonaje;
         }
-
-
-        public static List<(Item Item, int Orden)> ExtraerDecoradores(IComponente personajeDecorado)
-        {
-            var resultado = new List<(Item, int)>();
-            int orden = 1;
-
-            while (personajeDecorado is Decorador decorador)
-            {
-                var item = new Item
-                {
-                    Id = decorador.Id,
-                    Nombre = decorador.Nombre,
-                    Poder = decorador.Poder,
-                    Defensa = decorador.Defensa,
-                    Tipo = decorador.Tipo
-                };
-
-                resultado.Add((item, orden));
-                orden++;
-
-                personajeDecorado = decorador.ObtenerPersonajeInterno();
-            }
-
-            resultado.Reverse();
-            return resultado;
-        }
-
-        public static PersonajeBase ObtenerPersonajeBase(IComponente componente)
-        {
-            while (componente is Decorador decorador)
-            {
-                componente = decorador.ObtenerPersonajeInterno();
-            }
-
-            return componente as PersonajeBase
-                ?? throw new InvalidCastException("No se pudo encontrar el personaje base");
-        }
+        #endregion
 
         #region Validaciones
         public void ValidarAplicacionItem(IComponente personaje, Item item)
@@ -205,7 +278,7 @@ namespace BLL
             {
                 if (item.Tipo == TipoDecoradorEnum.Trabajo)
                 {
-                    if (EstaDecorado(personaje))
+                    if (EstaDecorado(personaje) && personaje.Tipo != TipoDecoradorEnum.Trabajo)
                         throw new InvalidOperationException("El personaje tiene armamento no podes quitarle el trabajo.");
                 }
             }

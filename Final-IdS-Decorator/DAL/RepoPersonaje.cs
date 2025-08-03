@@ -86,6 +86,42 @@ namespace DAL
             }
         }
 
+        public async Task<bool> EliminarPersonaje(int personajeId)
+        {
+            try
+            {
+                var sql = "SP_ELIMINAR_PERSONAJE";
+                var parametros = new List<IDbDataParameter>
+                {
+                    _acceso.CrearParametro("@Id", personajeId, DbType.Int32),
+                };
+                var filasAfectadas = await _acceso.EscribirAsync(sql, parametros, CommandType.StoredProcedure);
+                return filasAfectadas > 0;
+            }
+            catch (AccesoADatosExcepcion ex)
+            {
+                throw new RepositorioExcepcion("Error al eliminar personaje", ex);
+            }
+        }
+
+        public async Task<bool> EliminarItemsPersonaje(int personajeId)
+        {
+            try
+            {
+                var sql = "SP_ELIMINAR_RELACIONES_PERSONAJE_ITEM";
+                var parametros = new List<IDbDataParameter>
+                {
+                    _acceso.CrearParametro("@Id", personajeId, DbType.Int32),
+                };
+                var filasAfectadas = await _acceso.EscribirAsync(sql, parametros, CommandType.StoredProcedure);
+                return filasAfectadas > 0;
+            }
+            catch (AccesoADatosExcepcion ex)
+            {
+                throw new RepositorioExcepcion("Error al eliminar los items del personaje", ex);
+            }
+        }
+
         public async Task<List<Personaje>> BuscarPersonajesDeJugador(int personajeId)
         {
             try

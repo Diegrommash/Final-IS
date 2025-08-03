@@ -13,6 +13,7 @@ namespace UI.Controles
         public IComponente Personaje { get; private set; }
 
         public event EventHandler<IComponente>? OnModificarPersonaje;
+        public event EventHandler<IComponente>? OnEliminarPersonaje;
 
         public ucCardPersonaje()
         {
@@ -39,6 +40,11 @@ namespace UI.Controles
         private void btnModificar_Click(object sender, EventArgs e)
         {
             OnModificarPersonaje?.Invoke(this, Personaje);
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            OnEliminarPersonaje?.Invoke(this, Personaje);
         }
     }
 }

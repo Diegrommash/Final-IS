@@ -292,6 +292,66 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_PERSONAJE
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF NOT EXISTS (SELECT 1 FROM Personaje WHERE Id = @Id)
+        BEGIN
+            RAISERROR('El personaje no existe.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        DELETE FROM JugadorPersonaje WHERE PersonajeId = @Id;
+
+        DELETE FROM PersonajeItem WHERE PersonajeId = @Id;
+
+        DELETE FROM Personaje WHERE Id = @Id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_RELACIONES_PERSONAJE_ITEM 
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        IF NOT EXISTS (SELECT 1 FROM Personaje WHERE Id = @Id)
+        BEGIN
+            RAISERROR('El personaje no existe.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+            DELETE FROM PersonajeItem 
+            WHERE PersonajeId = @Id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
+
+-- Procedimientos para el composite
 CREATE OR ALTER PROCEDURE SP_AGREGAR_MISION
     @Nombre NVARCHAR(100),
     @Descripcion NVARCHAR(255) = NULL,
