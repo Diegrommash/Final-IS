@@ -5,35 +5,8 @@ using BLL.Decoradores;
 
 public static class DecoMapper
 {
-    public static IComponente AplicarItem(this Item item, IComponente personaje)
+    public static IComponente ADecorador(this Item item, IComponente personaje)
     {
-        // Reglas de aplicación de trabajo
-        bool tieneTrabajo = ContieneTrabajo(personaje);
-        bool estaDecorado = EstaDecorado(personaje);
-
-        if (item.Tipo == TipoDecoradorEnum.Trabajo)
-        {
-            if (tieneTrabajo)
-                throw new InvalidOperationException("El personaje ya tiene un trabajo asignado.");
-
-            if (estaDecorado)
-                throw new InvalidOperationException("El trabajo debe ser el primer ítem asignado.");
-        }
-        else
-        {
-            if (!tieneTrabajo)
-                throw new InvalidOperationException("Debe asignar un trabajo antes de aplicar otros ítems.");
-        }
-
-        // Validación de máximos permitidos
-        if (MaximosPorTipo.TryGetValue(item.Tipo, out int maximo))
-        {
-            int actuales = ContarDecoradoresDelTipo(personaje, item.Tipo);
-            if (actuales >= maximo)
-                throw new InvalidOperationException($"Ya se alcanzó el máximo de {maximo} {item.Tipo}(s) permitidos.");
-        }
-
-        // Aplicar decorador correspondiente
         return item.Tipo switch
         {
             TipoDecoradorEnum.Arma => new ArmaDecorador(personaje, item),
@@ -45,46 +18,5 @@ public static class DecoMapper
         };
     }
 
-    private static readonly Dictionary<TipoDecoradorEnum, int> MaximosPorTipo = new()
-    {
-        { TipoDecoradorEnum.Trabajo, 1 },
-        { TipoDecoradorEnum.Arma, 2 },
-        { TipoDecoradorEnum.Armadura, 1 },
-        { TipoDecoradorEnum.Joya, 3 },
-        { TipoDecoradorEnum.Pocion, 5 }
-    };
-
-    private static int ContarDecoradoresDelTipo(IComponente personaje, TipoDecoradorEnum tipo)
-    {
-        int cantidad = 0;
-        IComponente actual = personaje;
-
-        while (actual is Decorador decorador)
-        {
-            if (decorador.Tipo == tipo)
-                cantidad++;
-
-            actual = decorador.ObtenerPersonajeInterno();
-        }
-
-        return cantidad;
-    }
-
-    private static bool ContieneTrabajo(IComponente personaje)
-    {
-        IComponente actual = personaje;
-        while (actual is Decorador decorador)
-        {
-            if (decorador.Tipo == TipoDecoradorEnum.Trabajo)
-                return true;
-
-            actual = decorador.ObtenerPersonajeInterno();
-        }
-        return false;
-    }
-
-    private static bool EstaDecorado(IComponente personaje)
-    {
-        return personaje is Decorador;
-    }
+    //public static Item AItem()
 }

@@ -12,14 +12,15 @@ using BLL.Decoradores;
 using BLL.Mapper;
 using Servicios;
 using UI;
+using static Azure.Core.HttpHeader;
 
 public class frmCrearPersonaje : Form
 {
     private readonly bool _esEdicion;
-    //private readonly IComponente? _personajeOriginal;
+    private readonly IComponente? _personajeOriginal;
 
     private readonly ServicioItem _servicioItem;
-    private readonly ServicioPersonaje _servicioPersonaje = new ServicioPersonaje();
+    private readonly ServicioPersonaje _servicioPersonaje;
 
     private bool _cargando = true;
     private Form? statsPopupActual;
@@ -32,7 +33,7 @@ public class frmCrearPersonaje : Form
     private Label lblPoder, lblDefensa;
     private Button btnCrear;
 
-    private IComponente personajeActual;
+    private IComponente _personajeActual;
 
     public frmCrearPersonaje()
     {
@@ -49,12 +50,12 @@ public class frmCrearPersonaje : Form
         _servicioPersonaje = new ServicioPersonaje();
 
         _esEdicion = true;
-        personajeActual = personajeExistente;
+        //_personajeActual = personajeExistente;
 
         InicializarComponentes();
         _ = CargarOpciones();
         RefrescarResumen();
-        //CargarPersonajeExistente(personajeActual);
+        CargarPersonajeExistente(personajeExistente);
     }
 
     private void InicializarComponentes()
@@ -116,15 +117,31 @@ public class frmCrearPersonaje : Form
         lblPoder = new Label { AutoSize = true };
         lblDefensa = new Label { AutoSize = true };
 
-        btnCrear = new Button { Text = _esEdicion == true ? "Modificar" : "Crear" , Width = 100 };
+        btnCrear = new Button { Text = _esEdicion == true ? "Modificar" : "Crear", Width = 100 };
         btnCrear.Click += BtnCrear_Click;
 
         AgregarFila(contenedor, "Nombre:", txtNombre, null, null, 0);
-        AgregarFila(contenedor, "Trabajo:", cmbTrabajo, () => AplicarDecorador(cmbTrabajo), () => QuitarDecorador(TipoDecoradorEnum.Trabajo), 1);
-        AgregarFila(contenedor, "Arma:", cmbArma, () => AplicarDecorador(cmbArma), () => QuitarDecorador(TipoDecoradorEnum.Arma), 2);
-        AgregarFila(contenedor, "Armadura:", cmbArmadura, () => AplicarDecorador(cmbArmadura), () => QuitarDecorador(TipoDecoradorEnum.Armadura), 3);
-        AgregarFila(contenedor, "Joya:", cmbJoya, () => AplicarDecorador(cmbJoya), () => QuitarDecorador(TipoDecoradorEnum.Joya), 4);
-        AgregarFila(contenedor, "Poción:", cmbPocion, () => AplicarDecorador(cmbPocion), () => QuitarDecorador(TipoDecoradorEnum.Pocion), 5);
+        //AgregarFila(contenedor, "Trabajo:", cmbTrabajo, () => AplicarDecorador(cmbTrabajo), () => QuitarDecorador(TipoDecoradorEnum.Trabajo), 1);
+        //AgregarFila(contenedor, "Arma:", cmbArma, () => AplicarDecorador(cmbArma), () => QuitarDecorador(TipoDecoradorEnum.Arma), 2);
+        //AgregarFila(contenedor, "Armadura:", cmbArmadura, () => AplicarDecorador(cmbArmadura), () => QuitarDecorador(TipoDecoradorEnum.Armadura), 3);
+        //AgregarFila(contenedor, "Joya:", cmbJoya, () => AplicarDecorador(cmbJoya), () => QuitarDecorador(TipoDecoradorEnum.Joya), 4);
+        //AgregarFila(contenedor, "Poción:", cmbPocion, () => AplicarDecorador(cmbPocion), () => QuitarDecorador(TipoDecoradorEnum.Pocion), 5);
+
+        AgregarFila(contenedor, "Trabajo:", cmbTrabajo,
+            () => AplicarDecorador(cmbTrabajo),
+            () => { if (cmbTrabajo.SelectedItem is Item item) QuitarDecorador(cmbTrabajo); }, 1);
+        AgregarFila(contenedor, "Arma:", cmbArma,
+            () => AplicarDecorador(cmbArma),
+            () => { if (cmbArma.SelectedItem is Item item) QuitarDecorador(cmbArma); }, 2);
+        AgregarFila(contenedor, "Armadura:", cmbArmadura,
+            () => AplicarDecorador(cmbArmadura),
+            () => { if (cmbArmadura.SelectedItem is Item item) QuitarDecorador(cmbArmadura); }, 3);
+        AgregarFila(contenedor, "Joya:", cmbJoya,
+            () => AplicarDecorador(cmbJoya),
+            () => { if (cmbJoya.SelectedItem is Item item) QuitarDecorador(cmbJoya); }, 4);
+        AgregarFila(contenedor, "Poción:", cmbPocion,
+            () => AplicarDecorador(cmbPocion),
+            () => { if (cmbPocion.SelectedItem is Item item) QuitarDecorador(cmbPocion); }, 5);
 
         contenedor.Controls.Add(chkMostrarDetalles, 1, 6);
         contenedor.SetColumnSpan(chkMostrarDetalles, 3);
@@ -218,50 +235,52 @@ public class frmCrearPersonaje : Form
 
     private void ActualizarPersonaje(object? sender, EventArgs e)
     {
+        if (_esEdicion) return;
+
         string nombre = txtNombre.Text.Trim();
         if (string.IsNullOrEmpty(nombre))
         {
-            personajeActual = null;
+            _personajeActual = null;
             lstResumen.Items.Clear();
             lblPoder.Text = "";
             lblDefensa.Text = "";
             return;
         }
 
-        personajeActual = new PersonajeBase(nombre);
+        _personajeActual = new PersonajeBase(nombre);
         _orden = 0;
         RefrescarResumen();
     }
 
     private void CargarPersonajeExistente(IComponente personaje)
     {
-        //personajeActual = personaje.Clonar();
+        _personajeActual = personaje.Clonar();
 
         txtNombre.Text = ServicioPersonaje.ObtenerPersonajeBase(personaje).Nombre;
 
-        var decoradores = ServicioPersonaje.ExtraerDecoradores(personaje);
+        //var decoradores = ServicioPersonaje.ExtraerDecoradores(personaje);
 
-        foreach (var deco in decoradores)
-        {
-            switch (deco.Item.Tipo)
-            {
-                case TipoDecoradorEnum.Trabajo:
-                    cmbTrabajo.SelectedItem = deco.Item.Id;
-                    break;
-                case TipoDecoradorEnum.Arma:
-                    cmbArma.SelectedItem = deco.Item;
-                    break;
-                case TipoDecoradorEnum.Armadura:
-                    cmbArmadura.SelectedItem = deco.Item;
-                    break;
-                case TipoDecoradorEnum.Joya:
-                    cmbJoya.SelectedItem = deco.Item;
-                    break;
-                case TipoDecoradorEnum.Pocion:
-                    cmbPocion.SelectedItem = deco.Item;
-                    break;
-            }
-        }
+        //foreach (var deco in decoradores)
+        //{
+        //    switch (deco.Item.Tipo)
+        //    {
+        //        case TipoDecoradorEnum.Trabajo:
+        //            cmbTrabajo.SelectedItem = deco.Item;
+        //            break;
+        //        case TipoDecoradorEnum.Arma:
+        //            cmbArma.SelectedItem = deco.Item;
+        //            break;
+        //        case TipoDecoradorEnum.Armadura:
+        //            cmbArmadura.SelectedItem = deco.Item;
+        //            break;
+        //        case TipoDecoradorEnum.Joya:
+        //            cmbJoya.SelectedItem = deco.Item;
+        //            break;
+        //        case TipoDecoradorEnum.Pocion:
+        //            cmbPocion.SelectedItem = deco.Item;
+        //            break;
+        //    }
+        //}
 
         RefrescarResumen();
     }
@@ -269,13 +288,14 @@ public class frmCrearPersonaje : Form
 
     private void AplicarDecorador(ComboBox combo)
     {
-        if (combo.SelectedItem is not Item item || personajeActual == null)
+        if (combo.SelectedItem is not Item item || _personajeActual == null)
             return;
 
         try
         {
-            personajeActual = item.AplicarItem(personajeActual);
-            if (personajeActual is Decorador deco)
+            _servicioPersonaje.ValidarAplicacionItem(_personajeActual, item);
+            _personajeActual = item.ADecorador(_personajeActual);
+            if (_personajeActual is Decorador deco)
                 deco.Orden = ++_orden;
             RefrescarResumen();
         }
@@ -285,11 +305,51 @@ public class frmCrearPersonaje : Form
         }
     }
 
+    private void QuitarDecorador(ComboBox combo)
+    {
+        try
+        {
+            if (_personajeActual == null) return;
+
+            if (combo.SelectedItem is not Item item || _personajeActual == null)
+                return;
+
+            IComponente actual = _personajeActual;
+            IComponente? anterior = null;
+
+            while (actual is Decorador deco)
+            {
+                _servicioPersonaje.ValidarQuitarItem(deco, item);
+                if (deco.Id == item.Id)
+                {
+                    if (anterior == null)
+                    {
+                        // Si es el primer decorador de la cadena, apunta directamente al siguiente
+                        _personajeActual = deco.ObtenerPersonajeInterno();
+                    }
+                    else if (anterior is Decorador decoradorAnterior)
+                    {
+                        // Reconecta el decorador anterior con el siguiente
+                        decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
+                    }
+                    break;
+                }
+                anterior = actual;
+                actual = deco.ObtenerPersonajeInterno();
+            }
+            RefrescarResumen();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error al quitar decorador:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void QuitarDecorador(TipoDecoradorEnum tipo)
     {
-        if (personajeActual == null) return;
+        if (_personajeActual == null) return;
 
-        IComponente actual = personajeActual;
+        IComponente actual = _personajeActual;
         IComponente? anterior = null;
 
         while (actual is Decorador deco)
@@ -298,7 +358,7 @@ public class frmCrearPersonaje : Form
             {
                 if (anterior == null)
                 {
-                    personajeActual = deco.ObtenerPersonajeInterno();
+                    _personajeActual = deco.ObtenerPersonajeInterno();
                 }
                 else if (anterior is Decorador decoradorAnterior)
                 {
@@ -313,22 +373,60 @@ public class frmCrearPersonaje : Form
         RefrescarResumen();
     }
 
+    //private void QuitarDecorador(int idDecorador)
+    //{
+    //    try
+    //    {
+    //        if (_personajeActual == null) return;
+
+    //        IComponente actual = _personajeActual;
+    //        IComponente? anterior = null;
+
+    //        while (actual is Decorador deco)
+    //        {
+    //            _servicioPersonaje.ValidarQuitarItem(deco, c);
+    //            if (deco.Id == idDecorador)
+    //            {
+    //                if (anterior == null)
+    //                {
+    //                    // Si es el primer decorador de la cadena, apunta directamente al siguiente
+    //                    _personajeActual = deco.ObtenerPersonajeInterno();
+    //                }
+    //                else if (anterior is Decorador decoradorAnterior)
+    //                {
+    //                    // Reconecta el decorador anterior con el siguiente
+    //                    decoradorAnterior.ReemplazarPersonajeInterno(deco.ObtenerPersonajeInterno());
+    //                }
+    //                break;
+    //            }
+    //            anterior = actual;
+    //            actual = deco.ObtenerPersonajeInterno();
+    //        }
+    //        RefrescarResumen();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        MessageBox.Show($"Error al quitar decorador:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    //    }
+    //}
+
+
     private void RefrescarResumen()
     {
         lstResumen.Items.Clear();
-        if (personajeActual == null) return;
+        if (_personajeActual == null) return;
 
-        string[] lineas = personajeActual.ObtenerDescripcion().Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] lineas = _personajeActual.ObtenerDescripcion().Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
         foreach (var linea in lineas)
             lstResumen.Items.Add(linea.Trim());
 
-        lblPoder.Text = $"Poder total: {personajeActual.ObtenerPoder()}";
-        lblDefensa.Text = $"Defensa total: {personajeActual.ObtenerDefensa()}";
+        lblPoder.Text = $"Poder total: {_personajeActual.ObtenerPoder()}";
+        lblDefensa.Text = $"Defensa total: {_personajeActual.ObtenerDefensa()}";
     }
 
     private async void BtnCrear_Click(object? sender, EventArgs e)
     {
-        if (personajeActual == null)
+        if (_personajeActual == null)
         {
             MessageBox.Show("Complete todos los campos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
@@ -336,13 +434,13 @@ public class frmCrearPersonaje : Form
 
         if (_esEdicion)
         {
-           // await _servicioPersonaje.ActualizarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
+            // await _servicioPersonaje.ActualizarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
             MessageBox.Show("Personaje actualizado con éxito.", "Éxito");
         }
         else
         {
-            await _servicioPersonaje.GuardarPersonajeAsync(personajeActual, SesionJugador.JugadorActual);
-            MessageBox.Show("Personaje creado con éxito:\n" + personajeActual.ObtenerDescripcion(), "Éxito");
+            await _servicioPersonaje.GuardarPersonajeAsync(_personajeActual, SesionJugador.JugadorActual);
+            MessageBox.Show("Personaje creado con éxito:\n" + _personajeActual.ObtenerDescripcion(), "Éxito");
         }
 
         this.DialogResult = DialogResult.OK;

@@ -1,4 +1,5 @@
 ﻿using BE;
+using BE.Enums;
 using BE.Excepciones;
 using BLL.Abstracciones;
 using BLL.Decoradores;
@@ -83,7 +84,7 @@ namespace BLL
 
                 foreach (var item in personaje.Items)
                 {
-                    personajeActual = item.AplicarItem(personajeActual);
+                    personajeActual = item.ADecorador(personajeActual);
                 }
 
                 return personajeActual;
@@ -107,7 +108,7 @@ namespace BLL
 
             foreach (var item in decoradores)
             {
-                nuevoPersonaje = item.AplicarItem(nuevoPersonaje);
+                nuevoPersonaje = item.ADecorador(nuevoPersonaje);
             }
 
             return nuevoPersonaje;
@@ -130,7 +131,7 @@ namespace BLL
 
             foreach (var item in decoradores)
             {
-                nuevoPersonaje = item.AplicarItem(nuevoPersonaje);
+                nuevoPersonaje = item.ADecorador(nuevoPersonaje);
             }
 
             return nuevoPersonaje;
@@ -173,5 +174,105 @@ namespace BLL
             return componente as PersonajeBase
                 ?? throw new InvalidCastException("No se pudo encontrar el personaje base");
         }
+
+        #region Validaciones
+        public void ValidarAplicacionItem(IComponente personaje, Item item)
+        {
+            bool tieneTrabajo = ContieneTrabajo(personaje);
+
+            if (item.Tipo == TipoDecoradorEnum.Trabajo)
+            {
+                if (tieneTrabajo)
+                    throw new InvalidOperationException("El personaje ya tiene un trabajo asignado.");
+            }
+            else
+            {
+                if (!tieneTrabajo)
+                    throw new InvalidOperationException("Debe asignar un trabajo antes de aplicar otros ítems.");
+            }
+
+            if (MaximosPorTipo.TryGetValue(item.Tipo, out int maximo))
+            {
+                int actuales = ContarDecoradoresDelTipo(personaje, item.Tipo);
+                if (actuales >= maximo)
+                    throw new InvalidOperationException($"Ya se alcanzó el máximo de {maximo} {item.Tipo}(s) permitidos.");
+            }
+        }
+
+        public void ValidarQuitarItem(IComponente personaje, Item item)
+        {
+            if (ContieneItem(personaje, item.Id))
+            {
+                if (item.Tipo == TipoDecoradorEnum.Trabajo)
+                {
+                    if (EstaDecorado(personaje))
+                        throw new InvalidOperationException("El personaje tiene armamento no podes quitarle el trabajo.");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("El personaje no contiene el item que se desea quitar.");
+            }
+        }
+
+        private static readonly Dictionary<TipoDecoradorEnum, int> MaximosPorTipo = new()
+        {
+            { TipoDecoradorEnum.Trabajo, 1 },
+            { TipoDecoradorEnum.Arma, 2 },
+            { TipoDecoradorEnum.Armadura, 1 },
+            { TipoDecoradorEnum.Joya, 3 },
+            { TipoDecoradorEnum.Pocion, 5 }
+        };
+
+        private static int ContarDecoradoresDelTipo(IComponente personaje, TipoDecoradorEnum tipo)
+        {
+            int cantidad = 0;
+            IComponente actual = personaje;
+
+            while (actual is Decorador decorador)
+            {
+                if (decorador.Tipo == tipo)
+                    cantidad++;
+
+                actual = decorador.ObtenerPersonajeInterno();
+            }
+
+            return cantidad;
+        }
+
+        private static bool ContieneTrabajo(IComponente personaje)
+        {
+            IComponente actual = personaje;
+            while (actual is Decorador decorador)
+            {
+                if (decorador.Tipo == TipoDecoradorEnum.Trabajo)
+                    return true;
+
+                actual = decorador.ObtenerPersonajeInterno();
+            }
+            return false;
+        }
+
+        private static bool EstaDecorado(IComponente personaje)
+        {
+            return personaje is Decorador;
+        }
+
+        private bool ContieneItem(IComponente personaje, int itemId)
+        {
+            IComponente actual = personaje;
+
+            while (actual is Decorador decorador)
+            {
+                if (decorador.Id == itemId)
+                    return true;
+
+                actual = decorador.ObtenerPersonajeInterno();
+            }
+            return false;
+        }
+        #endregion
+
+
     }
 }
