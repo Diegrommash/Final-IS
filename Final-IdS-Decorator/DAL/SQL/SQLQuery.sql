@@ -181,6 +181,22 @@ BEGIN TRY
         FOREIGN KEY (ItemId) REFERENCES Item(Id)
     );
 
+    -- Ordenes
+    CREATE TABLE Orden (
+       Id INT IDENTITY(1,1) PRIMARY KEY,
+       Declaracion NVARCHAR(100) NOT NULL,
+    );
+
+	-- Relacion ordenes tipo personaje
+	 CREATE TABLE OrdenRelacion (
+       OrdenId INT NOT NULL,
+	   TipoTrabajoId INT NOT NULL,
+	   Frase VARCHAR(100) NOT NULL,
+	   PRIMARY KEY (OrdenId, TipoTrabajoId),
+	   FOREIGN KEY (OrdenId) REFERENCES Orden(Id),
+       FOREIGN KEY (TipoTrabajoId) REFERENCES Item(Id)
+    );
+
     COMMIT TRANSACTION;
     PRINT 'Transacción completada exitosamente.';
 END TRY

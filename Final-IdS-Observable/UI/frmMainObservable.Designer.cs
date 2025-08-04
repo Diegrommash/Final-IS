@@ -3,14 +3,14 @@
     partial class frmMainObservable
     {
         /// <summary>
-        /// Variable del diseñador necesaria.
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// Limpiar los recursos que se estén utilizando.
+        /// Clean up any resources being used.
         /// </summary>
-        /// <param name="disposing">true si los recursos administrados se deben eliminar; false en caso contrario.</param>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -20,44 +20,55 @@
             base.Dispose(disposing);
         }
 
-        #region Código generado por el Diseñador de Windows Forms
+        #region Windows Form Designer generated code
 
         /// <summary>
-        /// Método necesario para admitir el Diseñador. No se puede modificar
-        /// el contenido de este método con el editor de código.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
-            flpCards = new FlowLayoutPanel();
+            menuStrip1 = new MenuStrip();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
-            // flpCards
+            // menuStrip1
             // 
-            flpCards.AutoScroll = true;
-            flpCards.Dock = DockStyle.Fill;
-            flpCards.Location = new Point(0, 0);
-            flpCards.Margin = new Padding(3, 2, 3, 2);
-            flpCards.Name = "flpCards";
-            flpCards.Padding = new Padding(9, 8, 9, 8);
-            flpCards.Size = new Size(700, 338);
-            flpCards.TabIndex = 0;
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1 });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(800, 24);
+            menuStrip1.TabIndex = 1;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(114, 20);
+            toolStripMenuItem1.Text = "Gestionar ordenes";
+            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
             // 
             // frmMainObservable
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(700, 338);
-            Controls.Add(flpCards);
-            Margin = new Padding(3, 2, 3, 2);
+            ClientSize = new Size(800, 450);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
             Name = "frmMainObservable";
-            Text = "Mostrar Personajes";
-            Load += frmMostrarPersonajes_Load;
+            Text = "frmObservableMain";
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
-
+            PerformLayout();
         }
 
         #endregion
 
-        private System.Windows.Forms.FlowLayoutPanel flpCards;
+        private ContextMenuStrip contextMenuStrip1;
+        private ToolStripMenuItem gestionarOrdenesToolStripMenuItem;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem toolStripMenuItem1;
     }
 }

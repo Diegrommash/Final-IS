@@ -1,36 +1,31 @@
-﻿
-using Servicios;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using BLL;
 
 namespace UI
 {
     public partial class frmMainObservable : Form
     {
-
-
+        private readonly ServicioOrden _servicioOrden;
+        private readonly ServicioItem _servicioItem;
         public frmMainObservable()
         {
             InitializeComponent();
+            _servicioOrden = new ServicioOrden();
+            _servicioItem = new ServicioItem();
         }
 
-        private async void frmMostrarPersonajes_Load(object sender, EventArgs e)
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            await CargarPersonajesAsync();
+            frmABMOrden formOrden = new frmABMOrden(_servicioOrden, _servicioItem);
+            formOrden.Show();
         }
-
-        private async Task CargarPersonajesAsync()
-        {
-            flpCards.Controls.Clear();
-
-            //var personajes = await _servicioPersonaje.BuscarPersonajes(SesionJugador.JugadorActual);
-            //foreach (var personaje in personajes)
-            //{
-            //    var card = new ucCardPersonaje();
-            //    card.CargarPersonaje(personaje);
-            //    card.OnModificarPersonaje += Card_OnModificarPersonaje;
-            //    flpCards.Controls.Add(card);
-            //}
-        }
-
-        
     }
 }
