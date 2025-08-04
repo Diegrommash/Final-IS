@@ -17,8 +17,4 @@
     <Compile Include="..\..\Final-IdS-Decorator\BE\Personaje.cs" Link="Personaje.cs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Excepciones\" />
-  </ItemGroup>
-
 </Project>

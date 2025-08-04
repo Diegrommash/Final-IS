@@ -7,18 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Abstracciones\IComponente.cs" Link="IComponente.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\ArmaDecorador.cs" Link="ArmaDecorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\ArmaduraDecorador.cs" Link="ArmaduraDecorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\Decorador.cs" Link="Decorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\JoyaDecorador.cs" Link="JoyaDecorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\PocionDecorador.cs" Link="PocionDecorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\TrabajoDecorador.cs" Link="TrabajoDecorador.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Mapper\DecoMapper.cs" Link="DecoMapper.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\Mapper\PersonajeMapper.cs" Link="PersonajeMapper.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\PersonajeBase.cs" Link="PersonajeBase.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BLL\ServicioLogin.cs" Link="ServicioLogin.cs" />
-    <Compile Include="..\..\Final-IdS-Decorator\BLL\ServicioPersonaje.cs" Link="ServicioPersonaje.cs" />
   </ItemGroup>
 
   <ItemGroup>

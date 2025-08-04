@@ -28,29 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.flpCards = new System.Windows.Forms.FlowLayoutPanel();
-            this.SuspendLayout();
+            flpCards = new FlowLayoutPanel();
+            SuspendLayout();
             // 
             // flpCards
             // 
-            this.flpCards.AutoScroll = true;
-            this.flpCards.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flpCards.Location = new System.Drawing.Point(0, 0);
-            this.flpCards.Name = "flpCards";
-            this.flpCards.Padding = new System.Windows.Forms.Padding(10);
-            this.flpCards.Size = new System.Drawing.Size(800, 450);
-            this.flpCards.TabIndex = 0;
+            flpCards.AutoScroll = true;
+            flpCards.Dock = DockStyle.Fill;
+            flpCards.Location = new Point(0, 0);
+            flpCards.Margin = new Padding(3, 2, 3, 2);
+            flpCards.Name = "flpCards";
+            flpCards.Padding = new Padding(9, 8, 9, 8);
+            flpCards.Size = new Size(700, 338);
+            flpCards.TabIndex = 0;
             // 
-            // frmMostrarPersonajes
+            // frmMainObservable
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.flpCards);
-            this.Name = "frmMostrarPersonajes";
-            this.Text = "Mostrar Personajes";
-            this.Load += new System.EventHandler(this.frmMostrarPersonajes_Load);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(700, 338);
+            Controls.Add(flpCards);
+            Margin = new Padding(3, 2, 3, 2);
+            Name = "frmMainObservable";
+            Text = "Mostrar Personajes";
+            Load += frmMostrarPersonajes_Load;
+            ResumeLayout(false);
 
         }
 
