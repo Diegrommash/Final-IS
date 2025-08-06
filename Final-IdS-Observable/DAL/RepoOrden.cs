@@ -24,7 +24,7 @@ namespace DAL
         {
             try
             {
-                var sql = "SP_AGREGAR_ORDEN";
+                var sql = "SP_INSERTAR_ORDEN";
                 var parametros = new List<IDbDataParameter>
                 {
                     _acceso.CrearParametro("@Declaracion", orden.Declaracion, DbType.String)
@@ -105,7 +105,7 @@ namespace DAL
         {
             try
             {
-                var sql = "SP_LISTAR_ORDENES";
+                var sql = "SP_BUSCAR_TODAS_ORDENES";
                 var tabla = await _acceso.LeerAsync(sql);
                 if (tabla == null || tabla.Rows.Count == 0) return  new List<Orden>();
 

@@ -30,12 +30,13 @@
         {
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem2 });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -45,9 +46,16 @@
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(114, 20);
-            toolStripMenuItem1.Text = "Gestionar ordenes";
+            toolStripMenuItem1.Size = new Size(102, 20);
+            toolStripMenuItem1.Text = "Gestionar frases";
             toolStripMenuItem1.Click += toolStripMenuItem1_Click;
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(114, 20);
+            toolStripMenuItem2.Text = "Gestionar ordenes";
+            toolStripMenuItem2.Click += toolStripMenuItem2_Click;
             // 
             // frmMainObservable
             // 
@@ -70,5 +78,6 @@
         private ToolStripMenuItem gestionarOrdenesToolStripMenuItem;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem toolStripMenuItem1;
+        private ToolStripMenuItem toolStripMenuItem2;
     }
 }

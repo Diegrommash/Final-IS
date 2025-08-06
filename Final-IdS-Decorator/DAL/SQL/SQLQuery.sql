@@ -31,6 +31,17 @@ IF OBJECT_ID('SP_COMPLETAR_MISION', 'P') IS NOT NULL DROP PROCEDURE SP_COMPLETAR
 IF OBJECT_ID('SP_ASIGNAR_RECOMPENSA', 'P') IS NOT NULL DROP PROCEDURE SP_ASIGNAR_RECOMPENSA;
 IF OBJECT_ID('SP_ELIMINAR_RECOMPENSA', 'P') IS NOT NULL DROP PROCEDURE SP_ELIMINAR_RECOMPENSA;
 IF OBJECT_ID('SP_BUSCAR_RECOMPENSAS', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_RECOMPENSAS;
+-- sp del observable
+IF OBJECT_ID('SP_INSERTAR_ORDEN', 'P') IS NOT NULL DROP PROCEDURE SP_INSERTAR_ORDEN;
+IF OBJECT_ID('SP_MODIFICAR_ORDEN', 'P') IS NOT NULL DROP PROCEDURE SP_MODIFICAR_ORDEN;
+IF OBJECT_ID('SP_ELIMINAR_ORDEN', 'P') IS NOT NULL DROP PROCEDURE SP_ELIMINAR_ORDEN;
+IF OBJECT_ID('SP_BUSCAR_TODAS_ORDENES', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_TODAS_ORDENES;
+IF OBJECT_ID('SP_BUSCAR_ORDEN', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_ORDEN;
+IF OBJECT_ID('SP_INSERTAR_ORDEN_RELACION', 'P') IS NOT NULL DROP PROCEDURE SP_INSERTAR_ORDEN_RELACION;
+IF OBJECT_ID('SP_MODIFICAR_ORDEN_RELACION', 'P') IS NOT NULL DROP PROCEDURE SP_MODIFICAR_ORDEN_RELACION;
+IF OBJECT_ID('SP_ELIMINAR_ORDEN_RELACION', 'P') IS NOT NULL DROP PROCEDURE SP_ELIMINAR_ORDEN_RELACION;
+IF OBJECT_ID('SP_BUSCAR_TODAS_ORDENES_RELACION', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_TODAS_ORDENES_RELACION;
+IF OBJECT_ID('SP_BUSCAR_RELACIONES_POR_ORDEN', 'P') IS NOT NULL DROP PROCEDURE SP_BUSCAR_RELACIONES_POR_ORDEN;
 GO
 
 -- 4. Eliminar tablas
@@ -45,10 +56,14 @@ IF OBJECT_ID('Item', 'U') IS NOT NULL DROP TABLE Item;
 IF OBJECT_ID('Estadistica', 'U') IS NOT NULL DROP TABLE Estadistica;
 IF OBJECT_ID('TipoItem', 'U') IS NOT NULL DROP TABLE TipoItem;
 IF OBJECT_ID('Jugador', 'U') IS NOT NULL DROP TABLE Jugador;
+-- tablas observable
+IF OBJECT_ID('Orden', 'U') IS NOT NULL DROP TABLE Orden;
+IF OBJECT_ID('OrdenRelacion', 'U') IS NOT NULL DROP TABLE OrdenRelacion;
 -- tablas composite
 IF OBJECT_ID('Mision', 'U') IS NOT NULL DROP TABLE Mision;
 IF OBJECT_ID('MisionRelacion', 'U') IS NOT NULL DROP TABLE MisionRelacion;
 IF OBJECT_ID('MisionItemRecompensa', 'U') IS NOT NULL DROP TABLE MisionItemRecompensa;
+
 GO
 -- 5. Crear tablas y poblar datos
 BEGIN TRY
@@ -632,3 +647,183 @@ BEGIN
     WHERE MIR.MisionId = @MisionId;
 END;
 GO
+
+CREATE OR ALTER PROCEDURE SP_INSERTAR_ORDEN
+    @Declaracion NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        INSERT INTO Orden (Declaracion) VALUES (@Declaracion);
+        SELECT SCOPE_IDENTITY() AS NuevoId;
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_MODIFICAR_ORDEN
+    @Id INT,
+    @Declaracion NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Orden WHERE Id = @Id)
+        BEGIN
+            RAISERROR('La orden no existe.', 16, 1);
+            RETURN;
+        END
+        UPDATE Orden SET Declaracion = @Declaracion WHERE Id = @Id;
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_ORDEN
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        DELETE FROM Orden WHERE Id = @Id;
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_TODAS_ORDENES
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT Id, Declaracion FROM Orden ORDER BY Declaracion;
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_ORDEN
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT Id, Declaracion FROM Orden WHERE Id = @Id;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE SP_INSERTAR_ORDEN_RELACION
+    @OrdenId INT,
+    @TipoTrabajoId INT,
+    @Frase NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM Orden WHERE Id = @OrdenId)
+        BEGIN
+            RAISERROR('La orden no existe.', 16, 1);
+            RETURN;
+        END
+        IF NOT EXISTS (SELECT 1 FROM Item WHERE Id = @TipoTrabajoId)
+        BEGIN
+            RAISERROR('El tipo de trabajo no existe.', 16, 1);
+            RETURN;
+        END
+        IF EXISTS (SELECT 1 FROM OrdenRelacion WHERE OrdenId = @OrdenId AND TipoTrabajoId = @TipoTrabajoId)
+        BEGIN
+            RAISERROR('La relación ya existe.', 16, 1);
+            RETURN;
+        END
+        INSERT INTO OrdenRelacion (OrdenId, TipoTrabajoId, Frase)
+        VALUES (@OrdenId, @TipoTrabajoId, @Frase);
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_MODIFICAR_ORDEN_RELACION
+    @OrdenId INT,
+    @TipoTrabajoId INT,
+    @Frase NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        IF NOT EXISTS (SELECT 1 FROM OrdenRelacion WHERE OrdenId = @OrdenId AND TipoTrabajoId = @TipoTrabajoId)
+        BEGIN
+            RAISERROR('La relación especificada no existe.', 16, 1);
+            RETURN;
+        END
+        UPDATE OrdenRelacion SET Frase = @Frase
+        WHERE OrdenId = @OrdenId AND TipoTrabajoId = @TipoTrabajoId;
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_ELIMINAR_ORDEN_RELACION
+    @OrdenId INT,
+    @TipoTrabajoId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    BEGIN TRY
+        DELETE FROM OrdenRelacion WHERE OrdenId = @OrdenId AND TipoTrabajoId = @TipoTrabajoId;
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_TODAS_ORDENES_RELACION
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        ORR.OrdenId,
+        O.Declaracion AS Orden,
+        ORR.TipoTrabajoId,
+        I.Nombre AS TipoTrabajo,
+        ORR.Frase
+    FROM OrdenRelacion ORR
+    INNER JOIN Orden O ON O.Id = ORR.OrdenId
+    INNER JOIN Item I ON I.Id = ORR.TipoTrabajoId
+    ORDER BY O.Declaracion, I.Nombre;
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE SP_BUSCAR_RELACIONES_POR_ORDEN
+    @OrdenId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        ORR.OrdenId,
+        O.Declaracion AS Orden,
+        ORR.TipoTrabajoId,
+        I.Nombre AS TipoTrabajo,
+        ORR.Frase
+    FROM OrdenRelacion ORR
+    INNER JOIN Orden O ON O.Id = ORR.OrdenId
+    INNER JOIN Item I ON I.Id = ORR.TipoTrabajoId
+    WHERE ORR.OrdenId = @OrdenId
+    ORDER BY I.Nombre;
+END;
+GO
+

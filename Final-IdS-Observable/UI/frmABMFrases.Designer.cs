@@ -1,6 +1,8 @@
-﻿namespace UI
+﻿using System.Runtime.CompilerServices;
+
+namespace UI
 {
-    partial class frmABMOrden
+    partial class frmABMFrases
     {
         private System.ComponentModel.IContainer components = null;
         private ComboBox cmbOrden;
@@ -89,7 +91,12 @@
             this.dgvRelaciones.RowHeadersVisible = false;
             this.dgvRelaciones.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             this.dgvRelaciones.Size = new Size(643, 220);
+
+            this.dgvRelaciones.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvRelaciones.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+
             this.dgvRelaciones.CellClick += new DataGridViewCellEventHandler(this.dgvRelaciones_CellClick);
+            this.dgvRelaciones.CellDoubleClick += new DataGridViewCellEventHandler(this.dgvRelaciones_CellDoubleClick);
 
             // btnEliminar
             this.btnEliminar.Location = new Point(12, 320);
@@ -105,7 +112,7 @@
             this.btnCerrar.Size = new Size(75, 23);
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = true;
-            this.btnCerrar.Click += (s, e) => this.Close();
+//            this.btnCerrar.Click += (s, e) => this.Close();
 
             // frmOrdenRelacion
             this.ClientSize = new Size(667, 360);
@@ -121,6 +128,8 @@
             this.Controls.Add(this.btnCerrar);
             this.Name = "frmOrdenRelacion";
             this.Text = "Relaciones Orden - Tipo de trabajo";
+
+            this.Load += new EventHandler(this.frmABMOrden_Load);
 
             ((System.ComponentModel.ISupportInitialize)(this.dgvRelaciones)).EndInit();
             this.ResumeLayout(false);
