@@ -10,6 +10,20 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="Resources\Arquero.png" />
+    <None Remove="Resources\Default.png" />
+    <None Remove="Resources\guerrero.png" />
+    <None Remove="Resources\Ladron.png" />
+    <None Remove="Resources\Mago.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\guerrero.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +40,33 @@
     <ProjectReference Include="..\BE\BE.csproj" />
     <ProjectReference Include="..\BLL\BLL.csproj" />
     <ProjectReference Include="..\Servicios\Servicios.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Arquero.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Ladron.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Mago.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

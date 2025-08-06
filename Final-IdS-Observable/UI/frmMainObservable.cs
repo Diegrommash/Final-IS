@@ -36,5 +36,10 @@ namespace UI
             frmFrases.Show();
         }
 
+        private void personajesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmPersonajes frmPersonajes = new frmPersonajes();
+            frmPersonajes.Show();
+        }
     }
 }

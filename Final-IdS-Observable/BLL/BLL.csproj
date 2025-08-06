@@ -7,13 +7,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Abstracciones\IClonable.cs" Link="IClonable.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Abstracciones\IComponente.cs" Link="IComponente.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\ArmaDecorador.cs" Link="Decoradores\ArmaDecorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\ArmaduraDecorador.cs" Link="Decoradores\ArmaduraDecorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\Decorador.cs" Link="Decoradores\Decorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\JoyaDecorador.cs" Link="Decoradores\JoyaDecorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\PocionDecorador.cs" Link="Decoradores\PocionDecorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Decoradores\TrabajoDecorador.cs" Link="Decoradores\TrabajoDecorador.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Mapper\DecoMapper.cs" Link="Mapper\DecoMapper.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\Mapper\PersonajeMapper.cs" Link="Mapper\PersonajeMapper.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\PersonajeBase.cs" Link="PersonajeBase.cs" />
     <Compile Include="..\..\Final-IdS-Decorator\BLL\ServicioLogin.cs" Link="ServicioLogin.cs" />
+    <Compile Include="..\..\Final-IdS-Decorator\BLL\ServicioPersonaje.cs" Link="ServicioPersonaje.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj" />
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\Servicios\Servicios.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Decoradores\" />
+    <Folder Include="Mapper\" />
   </ItemGroup>
 
 </Project>

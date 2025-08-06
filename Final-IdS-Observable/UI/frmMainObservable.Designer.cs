@@ -31,12 +31,13 @@
             menuStrip1 = new MenuStrip();
             toolStripMenuItem1 = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripMenuItem();
+            personajesToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem2 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem2, personajesToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -56,6 +57,13 @@
             toolStripMenuItem2.Size = new Size(114, 20);
             toolStripMenuItem2.Text = "Gestionar ordenes";
             toolStripMenuItem2.Click += toolStripMenuItem2_Click;
+            // 
+            // personajesToolStripMenuItem
+            // 
+            personajesToolStripMenuItem.Name = "personajesToolStripMenuItem";
+            personajesToolStripMenuItem.Size = new Size(75, 20);
+            personajesToolStripMenuItem.Text = "Personajes";
+            personajesToolStripMenuItem.Click += personajesToolStripMenuItem_Click;
             // 
             // frmMainObservable
             // 
@@ -79,5 +87,6 @@
         private MenuStrip menuStrip1;
         private ToolStripMenuItem toolStripMenuItem1;
         private ToolStripMenuItem toolStripMenuItem2;
+        private ToolStripMenuItem personajesToolStripMenuItem;
     }
 }
