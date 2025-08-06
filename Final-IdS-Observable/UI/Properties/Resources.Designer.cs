@@ -73,6 +73,16 @@ namespace UI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Byte[].
         /// </summary>
+        internal static byte[] icon_arquero_hablando {
+            get {
+                object obj = ResourceManager.GetObject("icon_arquero_hablando", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Byte[].
+        /// </summary>
         internal static byte[] icon_default {
             get {
                 object obj = ResourceManager.GetObject("icon_default", resourceCulture);
@@ -93,6 +103,16 @@ namespace UI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Byte[].
         /// </summary>
+        internal static byte[] icon_guerrero_hablando {
+            get {
+                object obj = ResourceManager.GetObject("icon_guerrero_hablando", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Byte[].
+        /// </summary>
         internal static byte[] icon_ladron {
             get {
                 object obj = ResourceManager.GetObject("icon_ladron", resourceCulture);
@@ -103,9 +123,29 @@ namespace UI.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Byte[].
         /// </summary>
+        internal static byte[] icon_ladron_hablando {
+            get {
+                object obj = ResourceManager.GetObject("icon_ladron_hablando", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Byte[].
+        /// </summary>
         internal static byte[] icon_mago {
             get {
                 object obj = ResourceManager.GetObject("icon_mago", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Byte[].
+        /// </summary>
+        internal static byte[] icon_mago_hablando {
+            get {
+                object obj = ResourceManager.GetObject("icon_mago_hablando", resourceCulture);
                 return ((byte[])(obj));
             }
         }

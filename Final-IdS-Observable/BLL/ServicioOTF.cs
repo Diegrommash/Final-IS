@@ -110,5 +110,22 @@ namespace BLL
             }
         }
 
+        public async Task<string?> ObtenerFrasePorOrdenYTrabajoAsync(string orden, string trabajo)
+        {
+            try
+            {
+                var todas = await _repoOTF.Listar();
+
+                var match = todas.FirstOrDefault(o =>
+                    o.Orden.Declaracion.Equals(orden, StringComparison.OrdinalIgnoreCase) &&
+                    o.Trabajo.Nombre.Equals(trabajo, StringComparison.OrdinalIgnoreCase));
+
+                return match?.Frase;
+            }
+            catch (RepositorioExcepcion ex)
+            {
+                throw new ServicioExcepcion("Error al obtener frase para la orden y trabajo", ex);
+            }
+        }
     }
 }

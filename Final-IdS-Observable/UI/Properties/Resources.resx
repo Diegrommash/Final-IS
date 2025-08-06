@@ -118,19 +118,31 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="icon_default" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Default.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="icon_arquero_hablando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Iconos\icon_arquero_hablando.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="icon_guerrero_hablando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Iconos\icon_guerrero_hablando.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="icon_arquero" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Arquero.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\Iconos\icon_arquero.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="icon_default" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Iconos\Default.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="icon_guerrero" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\guerrero.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\Iconos\icon_guerrero.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="icon_ladron" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Ladron.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\Iconos\icon_ladron.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="icon_mago" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Mago.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Resources\Iconos\icon_mago.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="icon_ladron_hablando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Iconos\icon_ladron_hablando.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="icon_mago_hablando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Iconos\icon_mago_hablando.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

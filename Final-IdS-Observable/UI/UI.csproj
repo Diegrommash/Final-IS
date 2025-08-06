@@ -13,15 +13,16 @@
     <None Remove="Resources\Arquero.png" />
     <None Remove="Resources\Default.png" />
     <None Remove="Resources\guerrero.png" />
+    <None Remove="Resources\Iconos\icon_arquero.png" />
+    <None Remove="Resources\Iconos\icon_guerrero.png" />
+    <None Remove="Resources\Iconos\icon_ladron.png" />
+    <None Remove="Resources\Iconos\icon_mago.png" />
     <None Remove="Resources\Ladron.png" />
     <None Remove="Resources\Mago.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Default.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\guerrero.png">
+    <Resource Include="Resources\Iconos\Default.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
@@ -43,13 +44,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Arquero.png">
+    <Resource Include="Resources\Iconos\icon_arquero.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\Ladron.png">
+    <Resource Include="Resources\Iconos\icon_guerrero.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Resources\Mago.png">
+    <Resource Include="Resources\Iconos\icon_ladron.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Iconos\icon_mago.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
