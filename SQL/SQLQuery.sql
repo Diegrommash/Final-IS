@@ -46,15 +46,13 @@ GO
 
 -- 4. Eliminar tablas
 -- tablas decorator
-IF OBJECT_ID('MisionItemRecompensa', 'U') IS NOT NULL DROP TABLE MisionItemRecompensa;
-IF OBJECT_ID('MisionRelacion', 'U') IS NOT NULL DROP TABLE MisionRelacion;
-IF OBJECT_ID('Mision', 'U') IS NOT NULL DROP TABLE Mision;
 IF OBJECT_ID('JugadorPersonaje', 'U') IS NOT NULL DROP TABLE JugadorPersonaje;
 IF OBJECT_ID('PersonajeItem', 'U') IS NOT NULL DROP TABLE PersonajeItem;
 IF OBJECT_ID('Personaje', 'U') IS NOT NULL DROP TABLE Personaje;
-IF OBJECT_ID('Item', 'U') IS NOT NULL DROP TABLE Item;
-IF OBJECT_ID('Estadistica', 'U') IS NOT NULL DROP TABLE Estadistica;
 IF OBJECT_ID('TipoItem', 'U') IS NOT NULL DROP TABLE TipoItem;
+IF OBJECT_ID('Estadistica', 'U') IS NOT NULL DROP TABLE Estadistica;
+IF OBJECT_ID('Item', 'U') IS NOT NULL DROP TABLE Item;
+-- loguin/juego
 IF OBJECT_ID('Jugador', 'U') IS NOT NULL DROP TABLE Jugador;
 -- tablas observable
 IF OBJECT_ID('Orden', 'U') IS NOT NULL DROP TABLE Orden;
@@ -178,7 +176,7 @@ BEGIN TRY
         EsCompuesta BIT NOT NULL DEFAULT 0
     );
 
-    -- Relaciones Padre-Hijo (sin cascada doble)
+    -- Relaciones Padre-Hijo
     CREATE TABLE MisionRelacion (
         MisionPadreId INT NOT NULL,
         MisionHijaId INT NOT NULL,
@@ -187,7 +185,7 @@ BEGIN TRY
         FOREIGN KEY (MisionHijaId) REFERENCES Mision(Id) ON DELETE NO ACTION
     );
 
-    -- Recompensas de la misión
+    -- Relacion recompensas de la misión
     CREATE TABLE MisionItemRecompensa (
         MisionId INT NOT NULL,
         ItemId INT NOT NULL,

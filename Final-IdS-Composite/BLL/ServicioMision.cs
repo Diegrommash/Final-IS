@@ -17,7 +17,6 @@ namespace BLL
             _repoRecompensa = new RepoRecompensa(_acceso);
         }
 
-        //Crear misión simple
         public async Task<int> CrearMisionSimple(string nombre, string descripcion, int dificultad, List<Item>? recompensas = null)
         {
             try
@@ -53,7 +52,6 @@ namespace BLL
             }       
         }
 
-        //Crear misión compuesta
         public async Task<int> CrearMisionCompuesta(string nombre, string descripcion, List<Item>? recompensas = null)
         {
             try
@@ -85,7 +83,6 @@ namespace BLL
 
         }
 
-        //Modificar misión (simple o compuesta)
         public async Task<bool> Modificar(IMision mision)
         {
             try
@@ -100,7 +97,6 @@ namespace BLL
 
         }
 
-        //Eliminar misión
         public async Task<bool> Eliminar(IMision mision)
         {
             try
@@ -115,7 +111,6 @@ namespace BLL
 
         }
 
-        //Asignar hija a una misión compuesta
         public async Task<bool> AsignarMision(IMision padre, IMision hija)
         {
             try
@@ -141,7 +136,6 @@ namespace BLL
 
         }
 
-        //Quitar misión hija
         public async Task<bool> QuitarMision(IMision padre, IMision hija)
         {
             try
@@ -161,7 +155,6 @@ namespace BLL
 
         }
 
-        //Obtener toda la jerarquía de misiones
         public async Task<List<IMision>> ObtenerArbol()
         {
             try
@@ -174,7 +167,6 @@ namespace BLL
             }
         }
 
-        //Obtener una misión específica con su subárbol
         public async Task<IMision?> ObtenerPorId(int id)
         {
             try
@@ -187,7 +179,6 @@ namespace BLL
             }
         }
 
-        //Marcar misión como completada
         public async Task CompletarMision(IMision mision)
         {
             try
@@ -211,7 +202,6 @@ namespace BLL
    
         }
 
-        //Verificar si una misión es descendiente de otra
         public bool EsDescendiente(IMision padre, IMision posibleHija)
         {
             if (posibleHija.Hijas == null)

@@ -17,7 +17,7 @@ using static Azure.Core.HttpHeader;
 public class frmCrearPersonaje : Form
 {
     private readonly bool _esEdicion;
-    private readonly IComponente? _personajeOriginal;
+    //private readonly IComponente? _personajeOriginal;
 
     private readonly ServicioItem _servicioItem;
     private readonly ServicioPersonaje _servicioPersonaje;
@@ -50,7 +50,6 @@ public class frmCrearPersonaje : Form
         _servicioPersonaje = new ServicioPersonaje();
 
         _esEdicion = true;
-        //_personajeActual = personajeExistente;
 
         InicializarComponentes();
         _ = CargarOpciones();
@@ -251,30 +250,6 @@ public class frmCrearPersonaje : Form
         _personajeActual = personaje.Clonar();
 
         txtNombre.Text = ServicioPersonaje.ObtenerPersonajeBase(personaje).Nombre;
-
-        //var decoradores = ServicioPersonaje.ExtraerDecoradores(personaje);
-
-        //foreach (var deco in decoradores)
-        //{
-        //    switch (deco.Item.Tipo)
-        //    {
-        //        case TipoDecoradorEnum.Trabajo:
-        //            cmbTrabajo.SelectedItem = deco.Item;
-        //            break;
-        //        case TipoDecoradorEnum.Arma:
-        //            cmbArma.SelectedItem = deco.Item;
-        //            break;
-        //        case TipoDecoradorEnum.Armadura:
-        //            cmbArmadura.SelectedItem = deco.Item;
-        //            break;
-        //        case TipoDecoradorEnum.Joya:
-        //            cmbJoya.SelectedItem = deco.Item;
-        //            break;
-        //        case TipoDecoradorEnum.Pocion:
-        //            cmbPocion.SelectedItem = deco.Item;
-        //            break;
-        //    }
-        //}
 
         RefrescarResumen();
     }

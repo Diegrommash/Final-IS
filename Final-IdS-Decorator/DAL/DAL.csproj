@@ -7,16 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SQL\**" />
+    <EmbeddedResource Remove="SQL\**" />
+    <None Remove="SQL\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BE\BE.csproj" />
     <ProjectReference Include="..\Servicios\Servicios.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SQL\" />
   </ItemGroup>
 
 </Project>
