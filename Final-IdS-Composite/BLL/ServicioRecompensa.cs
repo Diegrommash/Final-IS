@@ -74,7 +74,8 @@ namespace BLL
         {
             try
             {
-                return await _repoRecompensa.BuscarItems();
+                var items = await _repoRecompensa.BuscarItems();
+                return items.Where(i => i.Tipo != BE.Enums.TipoDecoradorEnum.Trabajo).ToList();
             }
             catch (RepositorioExcepcion ex)
             {
