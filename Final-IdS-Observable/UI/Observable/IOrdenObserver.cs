@@ -8,6 +8,6 @@ namespace UI.Observable
 {
     public interface IOrdenObserver
     {
-        void OnOrdenRecibida(string orden, string frase);
+        void OnOrdenRecibida(string orden);
     }
 }

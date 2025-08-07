@@ -7,10 +7,11 @@ namespace UI
 {
     public partial class ucCardPersonaje : UserControl, IOrdenObserver
     {
+        private readonly ServicioOTF _servicioOTF;
+
         private IComponente _personaje;
         private readonly string _iconPath;
 
-        // 🔹 Guarda imágenes actuales para animación
         private Image _iconNormal;
         private Image _iconHablando;
         private string _trabajoActual;
@@ -21,6 +22,7 @@ namespace UI
 
         public ucCardPersonaje()
         {
+            _servicioOTF = new ServicioOTF();
             InitializeComponent();
             _iconPath = Path.Combine(Application.StartupPath, "Resources", "Iconos");
         }
@@ -70,7 +72,7 @@ namespace UI
                 return icono;
 
             object defaultObj = Properties.Resources.ResourceManager.GetObject("icon_default");
-            return ConvertirAImagen(defaultObj) ?? new Bitmap(64, 64); // Fallback a un bitmap vacío
+            return ConvertirAImagen(defaultObj) ?? new Bitmap(64, 64);
         }
 
         private Image ConvertirAImagen(object recurso)
@@ -90,11 +92,11 @@ namespace UI
         #endregion
 
         #region metodos para que el pj hable
-        // 👉 Método que hace hablar al personaje
+
         public async void Hablar(string mensaje)
         {
             int alturaOriginal = this.Height;
-            this.Height += 30; // Aumenta espacio para la burbuja
+            this.Height += 30;
 
             Label burbuja = new Label
             {
@@ -104,8 +106,8 @@ namespace UI
                 BorderStyle = BorderStyle.FixedSingle,
                 Padding = new Padding(5),
                 Font = new Font("Segoe UI", 9, FontStyle.Italic),
-                Location = new Point(10, this.Height - 40), // Posición interna visible
-                MaximumSize = new Size(this.Width - 20, 0)  // Para evitar overflow lateral
+                Location = new Point(10, this.Height - 40),
+                MaximumSize = new Size(this.Width - 20, 0)
             };
 
             this.Controls.Add(burbuja);
@@ -120,14 +122,13 @@ namespace UI
             {
                 this.Controls.Remove(burbuja);
                 burbuja.Dispose();
-                this.Height = alturaOriginal; // Restaurar altura original
+                this.Height = alturaOriginal;
                 t.Stop();
                 t.Dispose();
             };
             t.Start();
         }
 
-        // ✅ Animación abrir/cerrar boca
         private void IniciarAnimacionBoca()
         {
             if (animacionBoca != null && animacionBoca.Enabled) return;
@@ -151,7 +152,6 @@ namespace UI
             }
         }
 
-        // ✅ Texto letra por letra
         private async Task MostrarTextoProgresivo(Label lbl, string mensaje)
         {
             lbl.Text = "";
@@ -163,9 +163,10 @@ namespace UI
         }
         #endregion
 
-        public async void OnOrdenRecibida(string orden, string frase)
+        public async void OnOrdenRecibida(string orden)
         {
-            // 🔹 Aquí podrías filtrar según si la orden aplica a este trabajo
+            string frase = await _servicioOTF.ObtenerFrasePorOrdenYTrabajoAsync(orden, TrabajoActual)
+                            ?? $"{TrabajoActual} responde a {orden}!";
             Hablar(frase);
         }
     }

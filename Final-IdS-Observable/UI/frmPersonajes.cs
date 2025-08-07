@@ -97,11 +97,7 @@ namespace UI
             {
                 if (obs is ucCardPersonaje card)
                 {
-                    string trabajo = card.TrabajoActual;
-                    string frase = await _servicioOTF.ObtenerFrasePorOrdenYTrabajoAsync(orden, trabajo)
-                                   ?? $"{trabajo} responde a {orden}!";
-
-                    obs.OnOrdenRecibida(orden, frase);
+                    obs.OnOrdenRecibida(orden);
                 }
             }
         }
